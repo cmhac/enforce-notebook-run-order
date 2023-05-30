@@ -3,6 +3,7 @@
 import os
 import pytest
 import enforce_notebook_run_order
+from enforce_notebook_run_order import InvalidNotebookRunError
 
 # pylint: disable=W0621:redefined-outer-name
 
@@ -80,7 +81,7 @@ def test_notebook_cell_not_run(notebook_cell_not_run_data):
     assert str(error.value) == expected_error_message
 
 
-def test_check_all_repo_notebooks(mocker):
+def test_check_all_repo_notebooks_valid(mocker):
     """
     tests that check_notebook_run_order is called correctly
     for each notebook in a given folder
@@ -92,9 +93,28 @@ def test_check_all_repo_notebooks(mocker):
     mock_check_notebook_run_order.reset_mock()
 
     test_data_dir = os.path.join(
-        "test", "test_hook_manager", "test_data", "enforce_notebook_run_order"
+        "test",
+        "test_enforce_notebook_run_order",
+        "test_data",
+        "enforce_notebook_run_order_valid",
     )
 
     enforce_notebook_run_order.check_all_repo_notebooks(test_data_dir)
 
     assert mock_check_notebook_run_order.call_count == 2
+
+
+def test_check_all_repo_notebooks_invalid():
+    """
+    tests that check_notebook_run_order is called correctly
+    for each notebook in a given folder
+    """
+    test_data_dir = os.path.join(
+        "test",
+        "test_enforce_notebook_run_order",
+        "test_data",
+        "enforce_notebook_run_order_invalid",
+    )
+
+    with pytest.raises(InvalidNotebookRunError):
+        enforce_notebook_run_order.check_all_repo_notebooks(test_data_dir)

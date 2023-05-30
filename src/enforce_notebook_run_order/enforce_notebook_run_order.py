@@ -49,8 +49,8 @@ def check_all_repo_notebooks(notebook_dir=".") -> None:
                     notebook_data = json.load(notebook_file)
                 try:
                     check_notebook_run_order(notebook_data)
-                except ValueError as error:
-                    raise NotebookRunOrderError(
+                except (NotebookCodeCellNotRunError, NotebookRunOrderError) as error:
+                    raise InvalidNotebookRunError(
                         f"notebook {notebook_path} was run out of order"
                     ) from error
 
