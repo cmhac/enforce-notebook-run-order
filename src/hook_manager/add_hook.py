@@ -5,6 +5,7 @@ from .common import (
     is_valid_hook_name,
     is_valid_hook_command,
     get_existing_hook_script,
+    get_hook_command,
     VALID_HOOKS,
 )
 
@@ -24,6 +25,7 @@ def add_hook(hook_name: str, command_name: str) -> None:
         )
 
     existing_hook_script = get_existing_hook_script(hook_name)
+    hook_command = get_hook_command(command_name)
 
     if existing_hook_script:
         if command_name in existing_hook_script:
@@ -31,10 +33,10 @@ def add_hook(hook_name: str, command_name: str) -> None:
             return
 
         print(f"Hook {hook_name} already exists. Appending {command_name} to it.")
-        hook_script = existing_hook_script + "\n" + command_name
+        hook_script = existing_hook_script + hook_command
     else:
         print(f"Hook {hook_name} does not exist. Creating it.")
-        hook_script = command_name
+        hook_script = "#!/usr/bin/env bash" + hook_command
 
     hook_path = Path(".git") / "hooks" / hook_name
     hook_path.write_text(hook_script)

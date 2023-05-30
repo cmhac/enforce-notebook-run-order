@@ -23,4 +23,4 @@ def test_add_hook_hook_exists():
         # check that the hook was updated
         with open(hook_path, "r", encoding="UTF-8") as hook_file:
             new_hook_contents = hook_file.read()
-            assert "enforce_notebook_run_order" in new_hook_contents
+            assert "python -m enforce_notebook_run_order" in new_hook_contents
