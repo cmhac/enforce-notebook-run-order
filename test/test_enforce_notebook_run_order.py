@@ -80,24 +80,21 @@ def test_notebook_cell_not_run(notebook_cell_not_run_data):
     assert str(error.value) == expected_error_message
 
 
-# def test_check_all_repo_notebooks(mocker):
-#     """
-#     tests that check_notebook_run_order is called correctly
-#     for each notebook in a given folder
-#     """
-#     # Adjust the patch path to include 'src' and use the correct module and function names.
-#     mock_check_notebook_run_order = mocker.patch(
-#         "src.enforce_notebook_run_order.enforce_notebook_run_order.check_notebook_run_order"
-#     )
-#     mock_check_notebook_run_order.reset_mock()
+def test_check_all_repo_notebooks(mocker):
+    """
+    tests that check_notebook_run_order is called correctly
+    for each notebook in a given folder
+    """
+    # Adjust the patch path to include 'src' and use the correct module and function names.
+    mock_check_notebook_run_order = mocker.patch(
+        "enforce_notebook_run_order.enforce_notebook_run_order.check_notebook_run_order"
+    )
+    mock_check_notebook_run_order.reset_mock()
 
-#     test_data_dir = os.path.join(
-#         "test", "test_hook_manager", "test_data", "enforce_notebook_run_order"
-#     )
-#     from src.enforce_notebook_run_order.enforce_notebook_run_order import (
-#         check_all_repo_notebooks,
-#     )
+    test_data_dir = os.path.join(
+        "test", "test_hook_manager", "test_data", "enforce_notebook_run_order"
+    )
 
-#     check_all_repo_notebooks(test_data_dir)
+    enforce_notebook_run_order.check_all_repo_notebooks(test_data_dir)
 
-#     assert mock_check_notebook_run_order.call_count == 2
+    assert mock_check_notebook_run_order.call_count == 2
