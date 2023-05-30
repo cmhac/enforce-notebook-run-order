@@ -3,7 +3,7 @@
 import os
 import subprocess
 import tempfile
-from add_hook.add_hook import (
+from hook_manager.add_hook import (
     is_valid_hook_name,
     is_valid_hook_command,
     get_existing_hook_script,
