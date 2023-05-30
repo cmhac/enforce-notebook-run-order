@@ -15,3 +15,13 @@ def test_is_valid_hook_name_invalid():
     assert add_hook.is_valid_hook_name("pre-merge-commit") is False
     assert add_hook.is_valid_hook_name("pre-receive") is False
     assert add_hook.is_valid_hook_name("update") is False
+
+
+def test_is_valid_hook_command_valid():
+    """tests that valid hook commands are valid"""
+    assert add_hook.is_valid_hook_command("enforce_notebook_run_order")
+
+
+def test_is_valid_hook_command_invalid():
+    """tests that invalid hook commands are invalid"""
+    assert add_hook.is_valid_hook_command("not_a_real_command") is False
