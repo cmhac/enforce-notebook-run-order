@@ -1,7 +1,6 @@
 """tests the enforce_run_order script"""
 
 import os
-from unittest.mock import patch
 import pytest
 import enforce_notebook_run_order
 
