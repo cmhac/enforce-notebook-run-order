@@ -1,13 +1,12 @@
 """tests common hook manager functions"""
 
 import os
-import subprocess
-import tempfile
 from hook_manager.common import (
     is_valid_hook_name,
     is_valid_hook_command,
     get_existing_hook_script,
 )
+from .utils import TempGitRepo
 
 
 def test_is_valid_hook_name_valid():
@@ -32,23 +31,6 @@ def test_is_valid_hook_command_valid():
 def test_is_valid_hook_command_invalid():
     """tests that invalid hook commands are invalid"""
     assert is_valid_hook_command("not_a_real_command") is False
-
-
-class TempGitRepo:
-    """creates a temporary git repo for testing purposes"""
-
-    def __init__(self):
-        self.start_dir = os.getcwd()
-        self.tmpdir = tempfile.TemporaryDirectory()
-
-    def __enter__(self):
-        os.chdir(self.tmpdir.name)
-        subprocess.check_call(["git", "init"], cwd=self.tmpdir.name)
-        return self.tmpdir.name  # Return the temp directory path
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.tmpdir.cleanup()  # Remove the directory when done
-        os.chdir(self.start_dir)
 
 
 def test_get_existing_hook_script_hook_not_exists():
