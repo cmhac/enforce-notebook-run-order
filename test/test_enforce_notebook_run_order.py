@@ -88,8 +88,9 @@ def test_check_all_repo_notebooks(mocker):
     mock_check_notebook_run_order = mocker.patch(
         "enforce_notebook_run_order.enforce_notebook_run_order.check_notebook_run_order"
     )
+
     test_data_dir = os.path.join("test", "test_data", "enforce_notebook_run_order")
     enforce_notebook_run_order.check_all_repo_notebooks(test_data_dir)
 
-    # check that the function was called 2 times
     assert mock_check_notebook_run_order.call_count == 2
+    mock_check_notebook_run_order.reset_mock()
