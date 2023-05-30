@@ -7,18 +7,25 @@ from typing import Union
 VALID_HOOKS = ["pre-commit", "pre-push", "pre-rebase"]
 
 
-def is_valid_hook_name(hook_name: str) -> bool:
+def check_is_valid_hook_name(hook_name: str) -> bool:
     """checks that the hook name is valid"""
-    return hook_name in VALID_HOOKS
+    if not hook_name in VALID_HOOKS:
+        raise ValueError(
+            f"Invalid hook name: {hook_name}. "
+            f"Valid hook names are: {', '.join(VALID_HOOKS)}"
+        )
 
 
-def is_valid_hook_command(command_name: str) -> bool:
+def check_is_valid_hook_command(command_name: str) -> bool:
     """attempts to import the command and returns True if it succeeds"""
     try:
         __import__(command_name)
         return True
-    except ImportError:
-        return False
+    except ImportError as exc:
+        raise ValueError(
+            f"Invalid command name: {command_name}. "
+            "Please check that it is installed correctly."
+        ) from exc
 
 
 def get_existing_hook_script(hook_name: str) -> Union[str, None]:

@@ -1,31 +1,16 @@
 """adds one of the modules in the src directory as a hook to the current repo"""
 
 from pathlib import Path
-from .common import (
-    is_valid_hook_name,
-    is_valid_hook_command,
-    get_existing_hook_script,
-    get_hook_command,
-    VALID_HOOKS,
-)
+from . import common
 
 
 def add_hook(hook_name: str, command_name: str) -> None:
     """adds the hook to the current repo"""
-    if not is_valid_hook_name(hook_name):
-        raise ValueError(
-            f"Invalid hook name: {hook_name}. "
-            f"Valid hook names are: {', '.join(VALID_HOOKS)}"
-        )
+    common.check_is_valid_hook_name(hook_name)
+    common.check_is_valid_hook_command(command_name)
 
-    if not is_valid_hook_command(command_name):
-        raise ValueError(
-            f"Invalid command name: {command_name}. "
-            "Please check that it is installed correctly."
-        )
-
-    existing_hook_script = get_existing_hook_script(hook_name)
-    hook_command = get_hook_command(command_name)
+    existing_hook_script = common.get_existing_hook_script(hook_name)
+    hook_command = common.get_hook_command(command_name)
 
     if existing_hook_script:
         if command_name in existing_hook_script:

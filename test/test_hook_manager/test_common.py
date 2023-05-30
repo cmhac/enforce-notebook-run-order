@@ -1,9 +1,10 @@
 """tests common hook manager functions"""
 
 import os
+import pytest
 from hook_manager.common import (
-    is_valid_hook_name,
-    is_valid_hook_command,
+    check_is_valid_hook_name,
+    check_is_valid_hook_command,
     get_existing_hook_script,
     get_hook_command,
 )
@@ -12,26 +13,40 @@ from .utils import TempGitRepo
 
 def test_is_valid_hook_name_valid():
     """tests that valid hook names are valid"""
-    assert is_valid_hook_name("pre-commit")
-    assert is_valid_hook_name("pre-push")
-    assert is_valid_hook_name("pre-rebase")
+    try:
+        check_is_valid_hook_name("pre-commit")
+        check_is_valid_hook_name("pre-push")
+        check_is_valid_hook_name("pre-rebase")
+    except ValueError:
+        pytest.fail("is_valid_hook_name raised ValueError unexpectedly")
 
 
 def test_is_valid_hook_name_invalid():
     """test that unsupported hook names are not valid"""
-    assert is_valid_hook_name("pre-merge-commit") is False
-    assert is_valid_hook_name("pre-receive") is False
-    assert is_valid_hook_name("update") is False
+    # assert is_valid_hook_name("pre-merge-commit") is False
+    # assert is_valid_hook_name("pre-receive") is False
+    # assert is_valid_hook_name("update") is False
+    with pytest.raises(ValueError):
+        check_is_valid_hook_name("pre-merge-commit")
+    with pytest.raises(ValueError):
+        check_is_valid_hook_name("pre-receive")
+    with pytest.raises(ValueError):
+        check_is_valid_hook_name("update")
 
 
 def test_is_valid_hook_command_valid():
     """tests that valid hook commands are valid"""
-    assert is_valid_hook_command("enforce_notebook_run_order")
+    try:
+        check_is_valid_hook_command("enforce_notebook_run_order")
+    except ValueError:
+        pytest.fail("is_valid_hook_command raised ValueError unexpectedly")
 
 
 def test_is_valid_hook_command_invalid():
     """tests that invalid hook commands are invalid"""
-    assert is_valid_hook_command("not_a_real_command") is False
+    # assert is_valid_hook_command("not_a_real_command") is False
+    with pytest.raises(ValueError):
+        check_is_valid_hook_command("not_a_real_command")
 
 
 def test_get_existing_hook_script_hook_not_exists():
