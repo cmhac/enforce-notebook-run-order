@@ -5,7 +5,7 @@ description = ""
 authors = ["Chris Hacker <49451910+christopher-hacker@users.noreply.github.com>"]
 readme = "README.md"
 packages = [
-    { include = "src", from = "." },
+    { include = "enforce_notebook_run_order", from = "src" },
 ]
 
 [tool.poetry.dependencies]
