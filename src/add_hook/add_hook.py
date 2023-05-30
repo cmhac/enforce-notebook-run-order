@@ -30,3 +30,35 @@ def get_existing_hook_script(hook_name: str) -> Union[str, None]:
     if hook_path.exists():
         return hook_path.read_text()
     return None
+
+
+def add_hook(hook_name: str, command_name: str) -> None:
+    """adds the hook to the current repo"""
+    if not is_valid_hook_name(hook_name):
+        raise ValueError(
+            f"Invalid hook name: {hook_name}. "
+            f"Valid hook names are: {', '.join(VALID_HOOKS)}"
+        )
+
+    if not is_valid_hook_command(command_name):
+        raise ValueError(
+            f"Invalid command name: {command_name}. "
+            "Please check that it is installed correctly."
+        )
+
+    existing_hook_script = get_existing_hook_script(hook_name)
+
+    if existing_hook_script:
+        if command_name in existing_hook_script:
+            print(f"Hook {hook_name} already exists for {command_name}.")
+            return
+
+        print(f"Hook {hook_name} already exists. Appending {command_name} to it.")
+        hook_script = existing_hook_script + "\n" + command_name
+    else:
+        print(f"Hook {hook_name} does not exist. Creating it.")
+        hook_script = command_name
+
+    hook_path = Path(".git") / "hooks" / hook_name
+    hook_path.write_text(hook_script)
+    hook_path.chmod(0o755)
