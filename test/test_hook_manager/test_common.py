@@ -5,6 +5,7 @@ from hook_manager.common import (
     is_valid_hook_name,
     is_valid_hook_command,
     get_existing_hook_script,
+    get_hook_command,
 )
 from .utils import TempGitRepo
 
@@ -50,3 +51,16 @@ def test_get_existing_hook_script_hook_exists():
         with open(hook_path, "w", encoding="UTF-8") as hook_file:
             hook_file.write(hook_contents)
         assert get_existing_hook_script("pre-commit") == hook_contents
+
+
+def test_get_hook_command():
+    """tests that get_hook_command returns the correct hook command"""
+    assert (
+        get_hook_command("enforce_notebook_run_order") == "\n\n"
+        "### BEGIN AUTOMATICALLY GENERATED - enforce_notebook_run_order ###"
+        "\n\n"
+        "python -m enforce_notebook_run_order"
+        "\n\n"
+        "### END AUTOMATICALLY GENERATED ###"
+        "\n\n"
+    )

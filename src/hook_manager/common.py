@@ -27,3 +27,16 @@ def get_existing_hook_script(hook_name: str) -> Union[str, None]:
     if hook_path.exists():
         return hook_path.read_text()
     return None
+
+
+def get_hook_command(command_name: str) -> str:
+    """returns the text of the command to be added to a hook"""
+    return (
+        "\n\n"
+        f"### BEGIN AUTOMATICALLY GENERATED - {command_name} ###"
+        "\n\n"
+        f"python -m {command_name}"
+        "\n\n"
+        "### END AUTOMATICALLY GENERATED ###"
+        "\n\n"
+    )
