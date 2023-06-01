@@ -9,7 +9,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("../src/"))
+sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -21,7 +21,7 @@ author = "Christopher Hacker"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autodoc", "sphinx_click"]
+extensions = ["sphinx.ext.autodoc", "sphinx_click", "recommonmark"]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -32,3 +32,5 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "alabaster"
 html_static_path = ["_static"]
+
+master_doc = "index"
