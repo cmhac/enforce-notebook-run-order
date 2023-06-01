@@ -88,13 +88,12 @@ def test_check_all_repo_notebooks_valid(mocker):
     """
     # Adjust the patch path to include 'src' and use the correct module and function names.
     mock_check_notebook_run_order = mocker.patch(
-        "enforce_notebook_run_order.enforce_notebook_run_order.check_notebook_run_order"
+        "enforce_notebook_run_order.check_notebook_run_order"
     )
     mock_check_notebook_run_order.reset_mock()
 
     test_data_dir = os.path.join(
         "test",
-        "test_enforce_notebook_run_order",
         "test_data",
         "enforce_notebook_run_order_valid",
     )
@@ -111,7 +110,6 @@ def test_check_all_repo_notebooks_invalid():
     """
     test_data_dir = os.path.join(
         "test",
-        "test_enforce_notebook_run_order",
         "test_data",
         "enforce_notebook_run_order_invalid",
     )
