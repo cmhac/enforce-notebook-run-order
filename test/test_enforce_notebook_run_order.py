@@ -1,5 +1,6 @@
 """tests the enforce_notebook_run_order module"""
 
+import argparse
 import os
 import pytest
 import enforce_notebook_run_order
@@ -7,6 +8,7 @@ from enforce_notebook_run_order import (
     InvalidNotebookRunError,
     NotebookCodeCellNotRunError,
     NotebookRunOrderError,
+    main as enforce_notebook_run_order_main,
 )
 
 # pylint: disable=redefined-outer-name
@@ -108,3 +110,20 @@ def test_check_all_repo_notebooks_invalid():
 
     with pytest.raises(InvalidNotebookRunError):
         enforce_notebook_run_order.check_all_repo_notebooks(test_data_dir)
+
+
+def test_main(mocker):
+    """tests the main function"""
+    # Mock argparse.ArgumentParser.parse_args
+    mock_parse_args = mocker.patch("argparse.ArgumentParser.parse_args")
+    mock_parse_args.return_value = argparse.Namespace(notebook_dir="test_dir")
+
+    # Mock check_all_repo_notebooks
+    mock_check_all_repo_notebooks = mocker.patch(
+        "enforce_notebook_run_order.check_all_repo_notebooks"
+    )
+
+    enforce_notebook_run_order_main()
+
+    # Assert that check_all_repo_notebooks was called with the correct argument
+    mock_check_all_repo_notebooks.assert_called_once_with("test_dir")

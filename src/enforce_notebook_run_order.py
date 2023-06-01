@@ -1,5 +1,6 @@
 """forces notebooks to run cells sequentially and fails if cells were run out of order"""
 
+import argparse
 import json
 import os
 import pathlib
@@ -55,5 +56,22 @@ def check_all_repo_notebooks(notebook_dir=".") -> None:
                     ) from error
 
 
+def main():
+    """main function"""
+    parser = argparse.ArgumentParser(
+        description="force notebooks to run cells sequentially "
+        "and fail if cells were run out of order"
+    )
+    parser.add_argument(
+        "--notebook-dir",
+        type=str,
+        default=".",
+        help="directory to recursively search for notebooks. "
+        "If not specified, will search the entire repo",
+    )
+    args = parser.parse_args()
+    check_all_repo_notebooks(args.notebook_dir)
+
+
 if __name__ == "__main__":
-    check_all_repo_notebooks()
+    main()
