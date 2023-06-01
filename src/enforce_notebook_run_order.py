@@ -100,14 +100,33 @@ def check_all_repo_notebooks(notebook_dir=".") -> None:
 
 @click.command()
 @click.option(
-    "--notebook-dir",
+    "--path",
+    "-p",
     default=".",
-    help="Directory to recursively search for notebooks. "
+    help="Path to a directory containing notebooks, or a single notebook. "
     "If not specified, will search the entire repo",
 )
-def cli(notebook_dir="."):
+def cli(path="."):
     """Checks the run order of notebooks in the specified directory"""
-    check_all_repo_notebooks(notebook_dir)
+    if os.path.isdir(path):
+        check_all_repo_notebooks(path)
+    else:
+        if not path.endswith(".ipynb"):
+            raise ValueError(
+                f"Invalid value passed to --path: {path}. "
+                "Must be a path to a notebook file with the .ipynb extension, or a directory."
+            )
+        notebook_path = pathlib.Path(path)
+        with open(notebook_path, "r", encoding="UTF-8") as notebook_file:
+            notebook_data = json.load(notebook_file)
+        try:
+            check_notebook_run_order(notebook_data)
+        except (NotebookCodeCellNotRunError, NotebookRunOrderError) as error:
+            raise InvalidNotebookRunError(
+                f"Notebook {notebook_path} was not run in order.\n\n"
+                # append the error message from the check_notebook_run_order function
+                f"{error}\n\n"
+            ) from error
 
 
 if __name__ == "__main__":  # pragma: no cover

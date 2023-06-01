@@ -147,13 +147,51 @@ def test_check_all_repo_notebooks_ignores_virtualenv(mocker):
     assert mock_check_notebook_run_order.call_count == 0
 
 
-def test_cli():
-    """Tests that the CLI command runs successfully."""
+def test_cli_invalid_notebook_path():
+    """Tests that the CLI raises an error when given a file that is not an ipynb."""
+    runner = CliRunner()
+    result = runner.invoke(enforce_notebook_run_order.cli, ["--path", "python.py"])
+    assert result.exit_code == 1
+    assert "Must be a path to a notebook file with the .ipynb extension" in str(
+        result.exc_info[1]
+    )
+
+
+def test_cli_valid_notebook_path_valid_notebook():
+    """Tests that the CLI returns 0 when given a valid notebook path."""
     runner = CliRunner()
     result = runner.invoke(
         enforce_notebook_run_order.cli,
-        ["--notebook-dir", "test/test_data/enforce_notebook_run_order_valid"],
+        [
+            "--path",
+            "test/test_data/enforce_notebook_run_order_valid/valid_notebook.ipynb",
+        ],
     )
+    assert result.exit_code == 0
 
-    # Check if the CLI command was invoked successfully
+
+def test_cli_valid_notebook_path_invalid_notebook():
+    """Tests that the CLI returns 1 when given an invalid notebook path."""
+    runner = CliRunner()
+    result = runner.invoke(
+        enforce_notebook_run_order.cli,
+        [
+            "--path",
+            "test/test_data/enforce_notebook_run_order_invalid/test_subdirectory/"
+            "valid_subdirectory_notebook.ipynb",
+        ],
+    )
+    assert result.exit_code == 1
+
+
+def test_cli_valid_notebook_dir_valid_notebooks():
+    """Tests that the CLI returns 0 when given a valid notebook_dir."""
+    runner = CliRunner()
+    result = runner.invoke(
+        enforce_notebook_run_order.cli,
+        [
+            "--path",
+            "test/test_data/enforce_notebook_run_order_valid",
+        ],
+    )
     assert result.exit_code == 0
