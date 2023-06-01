@@ -8,7 +8,7 @@ README.md: \
 	pandoc $< -o $@
 
 setup:
-	poetry install
+	poetry install --with dev
 	pre-commit install
 
 test:
