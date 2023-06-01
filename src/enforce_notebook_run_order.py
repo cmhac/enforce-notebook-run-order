@@ -71,7 +71,9 @@ def check_all_repo_notebooks(notebook_dir=".") -> None:
                     check_notebook_run_order(notebook_data)
                 except (NotebookCodeCellNotRunError, NotebookRunOrderError) as error:
                     raise InvalidNotebookRunError(
-                        f"notebook {notebook_path} was run out of order"
+                        f"Notebook {notebook_path} was not run in order.\n\n"
+                        # append the error message from the check_notebook_run_order function
+                        f"{error}\n\n"
                     ) from error
 
 
