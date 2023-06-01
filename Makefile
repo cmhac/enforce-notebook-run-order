@@ -7,9 +7,13 @@ README.md: \
 		$(wildcard docs/*.rst)
 	pandoc $< -o $@
 
+setup:
+	poetry install
+	pre-commit install
+
 test:
-	pytest --cov
-	coverage html
+	poetry run pytest --cov
+	poetry run coverage html
 
 docs:
 	$(MAKE) -C docs html
