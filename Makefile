@@ -1,6 +1,6 @@
 all: README.md
 
-.PHONY: all docs test
+.PHONY: all setup test docs
 
 README.md: \
 		GITHUB_README.rst \
