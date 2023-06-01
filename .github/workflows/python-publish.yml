@@ -44,9 +44,6 @@ jobs:
           # Check if tag already exists
           EXISTS=$(git tag -l | grep $NEW_VER)
 
-          echo "New version: $NEW_VER"
-          echo "Tag exists: $EXISTS"
-
       # - name: Lint with pylint
       #   run: |
       #     poetry run pylint $(git ls-files '*.py')
