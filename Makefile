@@ -5,7 +5,7 @@ all: README.md
 README.md: \
 		GITHUB_README.rst \
 		$(wildcard docs/*.rst)
-	pandoc README.rst -o README.md
+	pandoc $< -o $@
 
 docs:
 	$(MAKE) -C docs html

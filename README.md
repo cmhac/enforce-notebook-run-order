@@ -11,3 +11,24 @@ different results when running the notebook from top to bottom.
 
 This script enforces the run order of a notebook by raising an exception
 if any cells are run out of order.
+
+Usage
+-----
+
+This script can be used as a standalone script, or as a pre-commit hook.
+
+### Standalone
+
+To use `enforce_notebook_run_order` as a standalone script, simply run
+it with the path to the notebook you want to check:
+
+`python -m enforce_notebook_run_order my_notebook.ipynb`
+
+Or point it to a directory to check all notebooks in that directory:
+
+`python -m enforce_notebook_run_order my_notebooks/`
+
+### Pre-commit hook
+
+To use `enforce_notebook_run_order` as a pre-commit hook, add the
+following to your `.pre-commit-config.yaml`:
