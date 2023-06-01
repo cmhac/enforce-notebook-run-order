@@ -33,6 +33,12 @@ jobs:
           poetry-version: 1.4
       - name: Install Dependencies
         run: poetry install --with dev
+      - name: Lint with pylint
+        run: |
+          poetry run pylint $(git ls-files '*.py')
+      - name: Test with pytest
+        run: |
+          poetry run pytest src test
       - name: Check for version changes and create a tag
         run: |
           # Use poetry's python API to get the new version
@@ -54,12 +60,6 @@ jobs:
             git tag $NEW_VER
             git push origin $NEW_VER
           fi
-      - name: Lint with pylint
-        run: |
-          poetry run pylint $(git ls-files '*.py')
-      - name: Test with pytest
-        run: |
-          poetry run pytest src test
       - name: Build package
         run: poetry build
       - name: Publish distribution to PyPI
