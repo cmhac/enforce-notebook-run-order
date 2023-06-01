@@ -73,5 +73,5 @@ def main():
     check_all_repo_notebooks(args.notebook_dir)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()
