@@ -78,11 +78,13 @@ def check_all_repo_notebooks(notebook_dir=".") -> None:
 def main():
     """
     Main function that parses command-line arguments and checks notebook run order
-        based on the provided arguments.
+    based on the provided arguments.
 
     The function accepts a "--notebook-dir" argument that specifies the directory
-        to recursively search for notebooks.
+    to recursively search for notebooks.
+
     If this argument is not specified, the search defaults to the entire repo.
+
     """
     parser = argparse.ArgumentParser(
         description="force notebooks to run cells sequentially "
