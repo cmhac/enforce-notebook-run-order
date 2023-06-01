@@ -39,7 +39,7 @@ jobs:
           NEW_VER=$(poetry version -s)
 
           # Fetch tags
-          git fetch --prune --unshallow --tags
+          git fetch --prune --tags
 
           # Check if tag already exists
           EXISTS=$(git tag -l | grep $NEW_VER)
