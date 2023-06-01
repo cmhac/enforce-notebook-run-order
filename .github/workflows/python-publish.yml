@@ -9,8 +9,8 @@
 name: Publish Python package
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: ["main"]
   workflow_dispatch:
     inputs:
 
@@ -33,6 +33,32 @@ jobs:
           poetry-version: 1.4
       - name: Install Dependencies
         run: poetry install --with dev
+      - name: Check for version changes and create a tag
+        run: |
+          # Use poetry's python API to get the new version
+          NEW_VER=$(poetry version -s)
+
+          # Fetch tags
+          git fetch --prune --unshallow --tags
+
+          # Check if tag already exists
+          EXISTS=$(git tag -l | grep $NEW_VER)
+
+          if [ -z "$EXISTS" ]; then
+            echo "New version detected: $NEW_VER"
+
+            git config --global user.email "action@github.com"
+            git config --global user.name "GitHub Action"
+
+            # Create a new tag
+            git tag $NEW_VER
+
+            # Push the tag to the remote repository
+            git push origin $NEW_VER
+          else
+            echo "No new version detected"
+            exit 0
+          fi
       - name: Lint with pylint
         run: |
           poetry run pylint $(git ls-files '*.py')
