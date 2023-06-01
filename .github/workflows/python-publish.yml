@@ -44,6 +44,15 @@ jobs:
           # Check if tag already exists
           EXISTING_VERSIONS=$(git tag --list)
 
+          if [[ $EXISTING_VERSIONS =~ (^|[[:space:]])"$NEW_VER"($|[[:space:]]) ]]; then
+            echo "Tag $NEW_VER already exists. Skipping..."
+            exit 0
+          else
+            echo "Creating tag $NEW_VER..."
+            git tag $NEW_VER
+            git push origin $NEW_VER
+          fi
+
       # - name: Lint with pylint
       #   run: |
       #     poetry run pylint $(git ls-files '*.py')
