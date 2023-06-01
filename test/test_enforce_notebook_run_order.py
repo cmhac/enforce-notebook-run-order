@@ -80,6 +80,16 @@ def test_check_notebook_run_order_cell_not_run(notebook_cell_not_run_data):
     assert str(error.value) == expected_error_message
 
 
+def test_notebook_is_in_virtualenv():
+    """Tests that notebook_is_in_virtualenv returns True when in a virtualenv."""
+    assert enforce_notebook_run_order.notebook_is_in_virtualenv(
+        ".venv/lib/python3.8/site-packages/nbclient/tests/files/Empty Cell.ipynb"
+    )
+    assert not enforce_notebook_run_order.notebook_is_in_virtualenv(
+        "notebooks/Empty Cell.ipynb"
+    )
+
+
 def test_check_all_repo_notebooks_valid(mocker):
     """
     Tests that check_notebook_run_order is called correctly
@@ -109,6 +119,32 @@ def test_check_all_repo_notebooks_invalid():
 
     with pytest.raises(InvalidNotebookRunError):
         enforce_notebook_run_order.check_all_repo_notebooks(test_data_dir)
+
+
+def test_check_all_repo_notebooks_ignores_virtualenv(mocker):
+    """
+    Tests that check_notebook_run_order is not called for notebooks
+    in a virtualenv.
+    """
+    mock_check_notebook_run_order = mocker.patch(
+        "enforce_notebook_run_order.check_notebook_run_order"
+    )
+
+    test_data_dir = os.path.join(
+        "test",
+        "test_data",
+        "test_virtual_environment",
+        "test_lib",
+        "python3.x",
+        "site-packages",
+        "testpackage",
+        "tests",
+        "test_data",
+    )
+
+    enforce_notebook_run_order.check_all_repo_notebooks(test_data_dir)
+
+    assert mock_check_notebook_run_order.call_count == 0
 
 
 def test_cli():

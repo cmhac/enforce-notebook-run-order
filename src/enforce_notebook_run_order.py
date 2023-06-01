@@ -48,6 +48,25 @@ def check_notebook_run_order(notebook_data: dict) -> None:
             previous_cell_number = current_cell_number
 
 
+def notebook_is_in_virtualenv(notebook_path: pathlib.Path) -> bool:
+    """
+    Checks whether a notebook is in the current repo or is in the virtual environment's
+    site-packages directory.
+
+    Some dependencies may contain Jupyter notebooks in their site-packages directory for
+    testing or documentation purposes. These notebooks should not be checked for run order.
+
+    Args:
+        notebook_path (pathlib.Path): Path to the notebook file.
+
+    Returns:
+        bool: True if the notebook is in the virtual environment's site-packages directory.
+    """
+    # if the notebook_path contains "site-packages", it is in the virtual environment
+    # and should not be checked
+    return "site-packages" in str(notebook_path)
+
+
 def check_all_repo_notebooks(notebook_dir=".") -> None:
     """
     Recursively searches for all Jupyter notebooks in the specified directory
@@ -63,6 +82,8 @@ def check_all_repo_notebooks(notebook_dir=".") -> None:
     for root, _, files in os.walk(notebook_dir):
         for file in files:
             if file.endswith(".ipynb"):
+                if notebook_is_in_virtualenv(pathlib.Path(root) / file):
+                    continue
                 notebook_path = pathlib.Path(root) / file
                 print(notebook_path)
                 with open(notebook_path, "r", encoding="UTF-8") as notebook_file:
