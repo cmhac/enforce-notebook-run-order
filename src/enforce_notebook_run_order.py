@@ -19,7 +19,16 @@ class InvalidNotebookRunError(Exception):
 
 
 def check_notebook_run_order(notebook_data: dict) -> None:
-    """checks that the notebook cells were run sequentially and fails if not"""
+    """
+    Checks that the notebook cells were run sequentially and fails if not.
+
+    Args:
+        notebook_data (dict): Notebook data in dictionary format.
+
+    Raises:
+        NotebookCodeCellNotRunError: If a code cell in the notebook was not run.
+        NotebookRunOrderError: If the cells in the notebook were not run sequentially.
+    """
     previous_cell_number = 0
     for cell in notebook_data["cells"]:
         if cell["cell_type"] == "code":
@@ -40,7 +49,17 @@ def check_notebook_run_order(notebook_data: dict) -> None:
 
 
 def check_all_repo_notebooks(notebook_dir=".") -> None:
-    """recursively searches for all jupyter notebooks in the repo and checks their run order"""
+    """
+    Recursively searches for all Jupyter notebooks in the specified directory
+    and checks their run order.
+
+    Args:
+        notebook_dir (str, optional): Directory to recursively search for notebooks.
+            Defaults to ".".
+
+    Raises:
+        InvalidNotebookRunError: If a notebook was run out of order.
+    """
     for root, _, files in os.walk(notebook_dir):
         for file in files:
             if file.endswith(".ipynb"):
@@ -57,7 +76,14 @@ def check_all_repo_notebooks(notebook_dir=".") -> None:
 
 
 def main():
-    """main function"""
+    """
+    Main function that parses command-line arguments and checks notebook run order
+        based on the provided arguments.
+
+    The function accepts a "--notebook-dir" argument that specifies the directory
+        to recursively search for notebooks.
+    If this argument is not specified, the search defaults to the entire repo.
+    """
     parser = argparse.ArgumentParser(
         description="force notebooks to run cells sequentially "
         "and fail if cells were run out of order"
