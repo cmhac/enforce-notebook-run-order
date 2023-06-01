@@ -52,7 +52,7 @@ jobs:
             git config --global user.email "github-actions[bot]@users.noreply.github.com"
             echo "Creating tag $NEW_VER..."
             git tag $NEW_VER
-            git push https://${{ secrets.GITHUB_TOKEN }}@github.com/christopher-hacker/enforce-notebook-run-order.git --tags
+            git push https://${{ secrets.GH_PAT }}@github.com/christopher-hacker/enforce-notebook-run-order.git --tags
           fi
 
       # - name: Lint with pylint
