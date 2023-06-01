@@ -48,6 +48,8 @@ jobs:
             echo "Tag $NEW_VER already exists. Skipping..."
             exit 0
           else
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
             echo "Creating tag $NEW_VER..."
             git tag $NEW_VER
             git push origin $NEW_VER
