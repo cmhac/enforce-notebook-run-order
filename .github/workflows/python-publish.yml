@@ -42,7 +42,7 @@ jobs:
           git fetch --prune --tags
 
           # Check if tag already exists
-          EXISTS=$(git tag -l | grep $NEW_VER)
+          EXISTING_VERSIONS=$(git tag --list)
 
       # - name: Lint with pylint
       #   run: |
