@@ -54,18 +54,17 @@ jobs:
             git tag $NEW_VER
             git push origin $NEW_VER
           fi
-
-      # - name: Lint with pylint
-      #   run: |
-      #     poetry run pylint $(git ls-files '*.py')
-      # - name: Test with pytest
-      #   run: |
-      #     poetry run pytest src test
-      # - name: Build package
-      #   run: poetry build
-      # - name: Publish distribution to Test PyPI
-      #   uses: pypa/gh-action-pypi-publish@master
-      #   with:
-      #     user: __token__
-      #     password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-      #     repository_url: https://test.pypi.org/legacy/
+      - name: Lint with pylint
+        run: |
+          poetry run pylint $(git ls-files '*.py')
+      - name: Test with pytest
+        run: |
+          poetry run pytest src test
+      - name: Build package
+        run: poetry build
+      - name: Publish distribution to Test PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository_url: https://test.pypi.org/legacy/
