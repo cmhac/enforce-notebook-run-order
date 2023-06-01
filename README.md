@@ -22,11 +22,11 @@ This script can be used as a standalone script, or as a pre-commit hook.
 To use `enforce_notebook_run_order` as a standalone script, simply run
 it with the path to the notebook you want to check:
 
-`python -m enforce_notebook_run_order my_notebook.ipynb`
+`enforce-notebook-run-order my_notebook.ipynb`
 
 Or point it to a directory to check all notebooks in that directory:
 
-`python -m enforce_notebook_run_order my_notebooks/`
+`enforce-notebook-run-order my_notebooks/`
 
 ### Pre-commit hook
 
