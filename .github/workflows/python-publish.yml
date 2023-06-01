@@ -37,7 +37,15 @@ jobs:
         run: |
           # Use poetry's python API to get the new version
           NEW_VER=$(poetry version -s)
-          echo "New version is $NEW_VER"
+
+          # Fetch tags
+          git fetch --prune --tags
+
+          # Check if tag already exists
+          EXISTS=$(git tag -l | grep $NEW_VER)
+
+          echo "New version: $NEW_VER"
+          echo "Tag exists: $EXISTS"
 
       # - name: Lint with pylint
       #   run: |
