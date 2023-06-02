@@ -21,7 +21,7 @@ jobs:
         run: |
           git clone https://github.com/christopher-hacker/enforce-notebook-run-order.git --branch gh-pages --single-branch gh-pages
           cd docs
-          make html
+          poetry run make html
           cd _build/html
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
