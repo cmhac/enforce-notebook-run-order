@@ -13,7 +13,7 @@ jobs:
           pip install sphinx sphinx-click recommonmark
       - name: build docs and commit
         run: |
-          git clone https://github.com/your_git/repository.git --branch gh-pages --single-branch gh-pages
+          git clone https://github.com/christopher-hacker/enforce-notebook-run-order.git --branch gh-pages --single-branch gh-pages
           cd docs
           make html
           cd _build/html
