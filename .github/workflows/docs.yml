@@ -1,8 +1,11 @@
 name: docs
 
 on:
-  push:
+  workflow_run:
+    workflows: ["test"]
     branches: [main]
+    types:
+      - completed
 
 jobs:
   docs:
@@ -17,4 +20,4 @@ jobs:
       - id: deployment
         uses: sphinx-notes/pages@v3
         with:
-          pyproject_extras: sphinx-click recommonmark
+          pyproject_extras: "sphinx-click recommonmark"
