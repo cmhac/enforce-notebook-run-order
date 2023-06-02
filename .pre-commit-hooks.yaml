@@ -1,0 +1,8 @@
+- id: enforce-notebook-run-order
+  name: enforce-notebook-run-order
+  description: Ensure that committed Jupyter notebooks aren't run out of order
+  entry: enforce-notebook-run-order
+  language: python
+  files: \.ipynb$
+  language_version: python3
+  fail_fast: true
