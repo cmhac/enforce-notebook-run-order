@@ -1,7 +1,15 @@
 name: docs
-on: [push, pull_request, workflow_dispatch]
+
+on:
+  workflow_run:
+    workflows: ["test"]
+    branches: [main]
+    types:
+      - completed
+
 permissions:
   contents: write
+
 jobs:
   docs:
     runs-on: ubuntu-latest
