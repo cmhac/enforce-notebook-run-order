@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>enforce-notebook-run-order &#8212; enforce-notebook-run-order  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Enforce Notebook Run Order" href="module_enforce_notebook_run_order.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="enforce-notebook-run-order">
+<h1>enforce-notebook-run-order<a class="headerlink" href="#enforce-notebook-run-order" title="Permalink to this heading">¶</a></h1>
+<p>A tiny python script to enforce the run order of a Jupyter notebook.</p>
+<p>Jupyter notebooks are great for interactive data analysis. However, when
+they can encourage a bad habit: running cells out of order. This can lead
+to notebooks being committed to the repository in a state where they don’t run
+from top to bottom, and other collaborators may receive different results
+when running the notebook from top to bottom.</p>
+<p>This script enforces the run order of a notebook by raising an exception if
+any cells are run out of order.</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
+<p>This script can be used as a standalone script, or as a pre-commit hook.</p>
+<section id="standalone">
+<h3>Standalone<a class="headerlink" href="#standalone" title="Permalink to this heading">¶</a></h3>
+<p>To use <code class="docutils literal notranslate"><span class="pre">enforce-notebook-run-order</span></code> as a standalone script, simply run it with the path to the
+notebook you want to check:</p>
+<p><code class="docutils literal notranslate"><span class="pre">enforce-notebook-run-order</span> <span class="pre">my_notebook.ipynb</span></code></p>
+<p>Or point it to a directory to check all notebooks in that directory:</p>
+<p><code class="docutils literal notranslate"><span class="pre">enforce-notebook-run-order</span> <span class="pre">my_notebooks/</span></code></p>
+</section>
+<section id="pre-commit-hook">
+<h3>Pre-commit hook<a class="headerlink" href="#pre-commit-hook" title="Permalink to this heading">¶</a></h3>
+<p>To use <code class="docutils literal notranslate"><span class="pre">enforce_notebook_run_order</span></code> as a pre-commit hook, add the following to your <code class="docutils literal notranslate"><span class="pre">.pre-commit-config.yaml</span></code>:</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module_enforce_notebook_run_order.html">Enforce Notebook Run Order</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_enforce_notebook_run_order.html#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_enforce_notebook_run_order.html#module-enforce_notebook_run_order">Python API</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">enforce-notebook-run-order</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="module_enforce_notebook_run_order.html">Enforce Notebook Run Order</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="module_enforce_notebook_run_order.html" title="next chapter">Enforce Notebook Run Order</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Christopher Hacker.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
