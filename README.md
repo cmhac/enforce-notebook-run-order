@@ -30,7 +30,8 @@ if any cells are run out of order.
 Usage
 -----
 
-This script can be used as a standalone script, or as a pre-commit hook.
+This script can be used as a standalone script, or as a [pre-commit
+hook](https://pre-commit.com/).
 
 ### Standalone
 
@@ -49,7 +50,6 @@ To use `enforce_notebook_run_order` as a pre-commit hook, add the
 following to your `.pre-commit-config.yaml`:
 
 ``` {.sourceCode .yaml}
-repos:
 - repo: https://github.com/christopher-hacker/enforce-notebook-run-order
     rev: 0.1.4
     hooks:
