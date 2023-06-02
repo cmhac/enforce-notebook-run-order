@@ -8,6 +8,7 @@
 
 import os
 import sys
+import enforce_notebook_run_order  # pylint: disable=unused-import
 
 sys.path.insert(0, os.path.abspath(".."))
 
