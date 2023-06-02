@@ -2,7 +2,7 @@
 
    <p align="left">
     <a href="https://badge.fury.io/py/enforce-notebook-run-order">
-      <img src="https://badge.fury.io/py/enforce-notebook-run-order.svg" alt="PyPI version" height="18">
+      <img src="https://badge.fury.io/py/enforce-notebook-run-order@2x.png" alt="PyPI version" height="20">
     </a>
      <a href="https://github.com/christopher-hacker/enforce-notebook-run-order/actions/workflows/test.yaml">
        <img src="https://github.com/christopher-hacker/enforce-notebook-run-order/actions/workflows/test.yaml/badge.svg" alt="Run tests">
