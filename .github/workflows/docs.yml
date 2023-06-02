@@ -1,23 +1,29 @@
 name: docs
-
-on:
-  workflow_run:
-    workflows: ["test"]
-    branches: [main]
-    types:
-      - completed
-
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: write
 jobs:
   docs:
-    runs-on: ubuntu-20.04
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    permissions:
-      pages: write
-      id-token: write
+    runs-on: ubuntu-latest
     steps:
-      - id: deployment
-        uses: sphinx-notes/pages@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - name: Install dependencies
+        run: |
+          pip install sphinx sphinx-click recommonmark
+      - name: build docs and commit
+        run: |
+          git clone https://github.com/your_git/repository.git --branch gh-pages --single-branch gh-pages
+          cd docs
+          make html
+          cd _build/html
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Update documentation" -a || true
+      - name: Push changes
+        uses: ad-m/github-push-action@master
         with:
-          pyproject_extras: "sphinx-click recommonmark"
+          branch: gh-pages
+          directory: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
