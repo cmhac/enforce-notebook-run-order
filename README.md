@@ -40,7 +40,7 @@ pip install enforce-notebook-run-order
 ```
 
 It can also be set up as a [pre-commit hook](https://pre-commit.com/).
-See the [Pre-commit hook](#pre-commit-hook) section for more details.
+See the [pre-commit hook](#pre-commit-hook) section for more details.
 
 Usage
 -----
@@ -63,7 +63,7 @@ Or point it to a directory to check all notebooks in that directory:
 enforce-notebook-run-order my_notebooks/
 ```
 
-### Pre-commit hook
+### pre-commit hook
 
 To use `enforce_notebook_run_order` as a pre-commit hook, add the
 following to your `.pre-commit-config.yaml`:
