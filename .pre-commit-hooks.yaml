@@ -5,4 +5,4 @@
   language: python
   files: \.ipynb$
   language_version: python3
-  fail_fast: true
+  fail_fast: false
