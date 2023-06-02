@@ -10,10 +10,13 @@ repos:
         entry: pylint
         language: system
         types: [python]
-        require_serial: true
       - id: pytest
         name: pytest
         entry: make test
         language: system
         types: [python]
-        require_serial: true
+      - id: force README.md build
+        name: force README.md build
+        entry: make README.md
+        language: system
+        types: [rst]
