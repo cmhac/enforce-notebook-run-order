@@ -33,3 +33,14 @@ Pre-commit hook
 ^^^^^^^^^^^^^^^
 
 To use ``enforce_notebook_run_order`` as a pre-commit hook, add the following to your ``.pre-commit-config.yaml``:
+
+.. code-block:: yaml
+
+    repos:
+    - repo: https://github.com/christopher-hacker/enforce-notebook-run-order
+        rev: 0.1.4
+        hooks:
+        - id: enforce-notebook-run-order
+            name: enforce-notebook-run-order
+            entry: enforce-notebook-run-order
+            types: [jupyter]
