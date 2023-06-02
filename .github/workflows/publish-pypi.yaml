@@ -6,13 +6,12 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Publish Python package
+name: Publish to PyPi
 
 on:
   push:
-    branches: ["main"]
-  workflow_dispatch:
-    inputs:
+    tags:
+      - "*"
 
 permissions:
   contents: write
@@ -39,29 +38,12 @@ jobs:
       - name: Test with pytest
         run: |
           poetry run pytest src test
-      - name: Check for version changes and create a tag
-        run: |
-          # Use poetry's python API to get the new version
-          NEW_VER=$(poetry version -s)
-
-          # Fetch tags
-          git fetch --prune --tags
-
-          # Check if tag already exists
-          EXISTING_VERSIONS=$(git tag --list)
-
-          if [[ $EXISTING_VERSIONS =~ (^|[[:space:]])"$NEW_VER"($|[[:space:]]) ]]; then
-            echo "Tag $NEW_VER already exists. Skipping..."
-            exit 0
-          else
-            git config --global user.name "github-actions[bot]"
-            git config --global user.email "github-actions[bot]@users.noreply.github.com"
-            echo "Creating tag $NEW_VER..."
-            git tag $NEW_VER
-            git push origin $NEW_VER
-          fi
       - name: Build package
         run: poetry build
+      - name: create release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/*"
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
