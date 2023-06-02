@@ -1,8 +1,10 @@
 [tool.poetry]
 name = "enforce-notebook-run-order"
-version = "0.1.4"
+version = "0.1.5"
 description = ""
 authors = ["Chris Hacker <49451910+christopher-hacker@users.noreply.github.com>"]
+license = "MIT"
+urls = { homepage = "https://github.com/christopher-hacker/enforce-notebook-run-order" }
 readme = "README.md"
 packages = [
     { include = "*", from = "src" },
