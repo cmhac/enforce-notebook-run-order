@@ -70,19 +70,16 @@ class TempNotebook:
         compares the outputs of cells of the temporary notebook to the cells
         of the output notebook
         """
-        for cell_index, cell in enumerate(output_data["cells"]):
-            if cell["cell_type"] == "code":
-                # check that the output cell matches the input cell
-                if (
-                    cell["outputs"]
-                    != self.notebook_data["cells"][cell_index]["outputs"]
-                ):
-                    raise CellOutputMismatchError(
-                        f"Cell #{cell_index} output does not match the expected output.\n\n"
-                        f"Cell contents: \n\n> {cell}"
-                        "Expected output: \n\n> "
-                        f"{self.notebook_data['cells'][cell_index]['outputs']}"
-                    )
+        code_cells = utils.get_code_cells(output_data)
+        for cell_index, cell in enumerate(code_cells):
+            # check that the output cell matches the input cell
+            if cell["outputs"] != self.notebook_data["cells"][cell_index]["outputs"]:
+                raise CellOutputMismatchError(
+                    f"Cell #{cell_index} output does not match the expected output.\n\n"
+                    f"Cell contents: \n\n> {cell}"
+                    "Expected output: \n\n> "
+                    f"{self.notebook_data['cells'][cell_index]['outputs']}"
+                )
 
     def check_notebook(self):
         """runs the temporary notebook and compares the outputs"""

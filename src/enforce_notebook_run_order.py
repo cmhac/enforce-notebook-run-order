@@ -52,22 +52,22 @@ def check_notebook_run_order(notebook_data: dict) -> None:
         NotebookRunOrderError: If the cells in the notebook were not run sequentially.
     """
     previous_cell_number = 0
-    for cell in notebook_data["cells"]:
-        if cell["cell_type"] == "code":
-            current_cell_number = cell["execution_count"]
-            if current_cell_number is None:
-                raise NotebookCodeCellNotRunError(
-                    f"Code cell was not run. The previous cell was #{previous_cell_number}. \n\n"
-                    f"Cell contents: \n\n> {cell}"
-                )
-            if current_cell_number != previous_cell_number + 1:
-                raise NotebookRunOrderError(
-                    "Cells were not run sequentially. "
-                    f"The cell that caused this error is #{current_cell_number} "
-                    f"and the previous cell was #{previous_cell_number}. \n\n"
-                    f"Cell contents: \n\n> {cell}"
-                )
-            previous_cell_number = current_cell_number
+    code_cells = utils.get_code_cells(notebook_data)
+    for cell in code_cells:
+        current_cell_number = cell["execution_count"]
+        if current_cell_number is None:
+            raise NotebookCodeCellNotRunError(
+                f"Code cell was not run. The previous cell was #{previous_cell_number}. \n\n"
+                f"Cell contents: \n\n> {cell}"
+            )
+        if current_cell_number != previous_cell_number + 1:
+            raise NotebookRunOrderError(
+                "Cells were not run sequentially. "
+                f"The cell that caused this error is #{current_cell_number} "
+                f"and the previous cell was #{previous_cell_number}. \n\n"
+                f"Cell contents: \n\n> {cell}"
+            )
+        previous_cell_number = current_cell_number
 
 
 def check_single_notebook(notebook_path: str, no_run: bool = False):
