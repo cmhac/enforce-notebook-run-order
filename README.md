@@ -66,6 +66,9 @@ nbcheck my_notebooks/
 You can also use the full `enforce-notebook-run-order` command, but the
 `nbcheck` command is provided as a convenience.
 
+For information on the command line interface, please refer to the [CLI
+documentation](module_enforce_notebook_run_order.html#command-line-interface).
+
 ### pre-commit hook
 
 To use `enforce_notebook_run_order` as a pre-commit hook, add the

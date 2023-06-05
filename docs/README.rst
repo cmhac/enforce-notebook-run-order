@@ -48,6 +48,8 @@ Or point it to a directory to check all notebooks in that directory:
 You can also use the full ``enforce-notebook-run-order`` command, but the ``nbcheck`` command is
 provided as a convenience.
 
+For information on the command line interface, please refer to the `CLI documentation <module_enforce_notebook_run_order.html#command-line-interface>`__.
+
 pre-commit hook
 ^^^^^^^^^^^^^^^
 
