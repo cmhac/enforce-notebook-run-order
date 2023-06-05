@@ -37,13 +37,16 @@ notebook(s) you want to check:
 
 .. code-block:: bash
 
-    enforce-notebook-run-order my_notebook.ipynb my_other_notebook.ipynb
+    nbcheck my_notebook.ipynb my_other_notebook.ipynb
 
 Or point it to a directory to check all notebooks in that directory:
 
 .. code-block:: bash
 
-    enforce-notebook-run-order my_notebooks/
+    nbcheck my_notebooks/
+
+You can also use the full ``enforce-notebook-run-order`` command, but the ``nbcheck`` command is
+provided as a convenience.
 
 pre-commit hook
 ^^^^^^^^^^^^^^^
