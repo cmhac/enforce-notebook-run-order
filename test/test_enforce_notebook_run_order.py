@@ -208,9 +208,10 @@ def test_cli_no_paths_searches_entire_dir(mocker):
 def test_cli_no_run_option(mocker):
     """
     Tests that process_path is called with the correct run option
-    when the --no-run option is specified.
+    when the --no-run option is specified, and a warning was was printed
     """
     mock_process_path = mocker.patch("enforce_notebook_run_order.process_path")
+    mock_warning = mocker.patch("enforce_notebook_run_order.warnings.warn")
 
     runner = CliRunner()
     result = runner.invoke(
@@ -227,3 +228,4 @@ def test_cli_no_run_option(mocker):
     )
 
     assert result.exit_code == 0
+    assert mock_warning.call_count == 1

@@ -4,6 +4,7 @@ import json
 import os
 import pathlib
 from typing import List
+import warnings
 import click
 import temp_notebook
 
@@ -129,6 +130,14 @@ def cli(paths: List[str] = None, no_run: bool = False):
     Checks the run order of notebooks in the specified paths,
     or the entire repo if no paths are specified
     """
+    if no_run:
+        warnings.warn(
+            "The --no-run option will not catch all problems with notebooks. "
+            "It is possible that the checks will pass, but the notebook was still run "
+            "out of order. It is highly recommended to move any long-running code to a separate "
+            "task that runs separately from the notebook."
+        )
+
     if paths:
         for path in paths:
             process_path(path, no_run)
