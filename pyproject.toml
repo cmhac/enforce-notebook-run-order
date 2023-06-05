@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "enforce-notebook-run-order"
-version = "1.0.0"
+version = "1.1.0"
 description = ""
 authors = ["Chris Hacker <49451910+christopher-hacker@users.noreply.github.com>"]
 license = "MIT"
@@ -32,3 +32,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 enforce-notebook-run-order = "enforce_notebook_run_order:cli"
+nbcheck = "enforce_notebook_run_order:cli"

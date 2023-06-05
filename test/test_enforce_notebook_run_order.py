@@ -200,6 +200,32 @@ def test_cli_no_paths_searches_entire_dir(mocker):
     result = runner.invoke(enforce_notebook_run_order.cli)
 
     # The process_path function should be called once, with the current directory as its argument
-    mock_process_path.assert_called_once_with(".")
+    mock_process_path.assert_called_once_with(".", False)
 
     assert result.exit_code == 0
+
+
+def test_cli_no_run_option(mocker):
+    """
+    Tests that process_path is called with the correct run option
+    when the --no-run option is specified, and a warning was was printed
+    """
+    mock_process_path = mocker.patch("enforce_notebook_run_order.process_path")
+    mock_warning = mocker.patch("enforce_notebook_run_order.warnings.warn")
+
+    runner = CliRunner()
+    result = runner.invoke(
+        enforce_notebook_run_order.cli,
+        [
+            "test/test_data/enforce_notebook_run_order_valid",
+            "--no-run",
+        ],
+    )
+
+    # The process_path function should be called once, with the current directory as its argument
+    mock_process_path.assert_called_once_with(
+        "test/test_data/enforce_notebook_run_order_valid", True
+    )
+
+    assert result.exit_code == 0
+    assert mock_warning.call_count == 1
