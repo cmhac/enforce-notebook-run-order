@@ -51,10 +51,10 @@ Usage
 ### Standalone
 
 To use `enforce-notebook-run-order` as a standalone script, simply run
-it with the path to the notebook you want to check:
+it with the path to the notebook(s) you want to check:
 
 ``` {.sourceCode .bash}
-enforce-notebook-run-order my_notebook.ipynb
+enforce-notebook-run-order my_notebook.ipynb my_other_notebook.ipynb
 ```
 
 Or point it to a directory to check all notebooks in that directory:
@@ -69,11 +69,9 @@ To use `enforce_notebook_run_order` as a pre-commit hook, add the
 following to your `.pre-commit-config.yaml`:
 
 ``` {.sourceCode .yaml}
-- repo: https://github.com/christopher-hacker/enforce-notebook-run-order
-    rev: 0.1.5
+repos:
+-   repo: https://github.com/christopher-hacker/enforce_notebook_run_order
+    rev: 1.0.0
     hooks:
-    - id: enforce-notebook-run-order
-        name: enforce-notebook-run-order
-        entry: enforce-notebook-run-order
-        types: [jupyter]
+    -   id: enforce-notebook-run-order
 ```
