@@ -3,6 +3,7 @@
 import json
 import os
 import pathlib
+from typing import List
 import click
 
 
@@ -16,6 +17,25 @@ class NotebookRunOrderError(Exception):
 
 class InvalidNotebookRunError(Exception):
     """raised when any problems were identified with a notebook's run order"""
+
+
+def notebook_is_in_virtualenv(notebook_path: pathlib.Path) -> bool:
+    """
+    Checks whether a notebook is in the current repo or is in the virtual environment's
+    site-packages directory.
+
+    Some dependencies may contain Jupyter notebooks in their site-packages directory for
+    testing or documentation purposes. These notebooks should not be checked for run order.
+
+    Args:
+        notebook_path (pathlib.Path): Path to the notebook file.
+
+    Returns:
+        bool: True if the notebook is in the virtual environment's site-packages directory.
+    """
+    # if the notebook_path contains "site-packages", it is in the virtual environment
+    # and should not be checked
+    return "site-packages" in str(notebook_path)
 
 
 def check_notebook_run_order(notebook_data: dict) -> None:
@@ -48,85 +68,54 @@ def check_notebook_run_order(notebook_data: dict) -> None:
             previous_cell_number = current_cell_number
 
 
-def notebook_is_in_virtualenv(notebook_path: pathlib.Path) -> bool:
-    """
-    Checks whether a notebook is in the current repo or is in the virtual environment's
-    site-packages directory.
-
-    Some dependencies may contain Jupyter notebooks in their site-packages directory for
-    testing or documentation purposes. These notebooks should not be checked for run order.
-
-    Args:
-        notebook_path (pathlib.Path): Path to the notebook file.
-
-    Returns:
-        bool: True if the notebook is in the virtual environment's site-packages directory.
-    """
-    # if the notebook_path contains "site-packages", it is in the virtual environment
-    # and should not be checked
-    return "site-packages" in str(notebook_path)
+def check_single_notebook(path: str):
+    """Check a single notebook."""
+    notebook_path = pathlib.Path(path)
+    with open(notebook_path, "r", encoding="UTF-8") as notebook_file:
+        notebook_data = json.load(notebook_file)
+    try:
+        check_notebook_run_order(notebook_data)
+    except (NotebookCodeCellNotRunError, NotebookRunOrderError) as error:
+        raise InvalidNotebookRunError(
+            f"Notebook {notebook_path} was not run in order.\n\n"
+            # append the error message from the check_notebook_run_order function
+            f"{error}\n\n"
+        ) from error
 
 
-def check_all_repo_notebooks(notebook_dir=".") -> None:
-    """
-    Recursively searches for all Jupyter notebooks in the specified directory
-    and checks their run order.
-
-    Args:
-        notebook_dir (str, optional): Directory to recursively search for notebooks.
-            Defaults to ".".
-
-    Raises:
-        InvalidNotebookRunError: If a notebook was run out of order.
-    """
-    for root, _, files in os.walk(notebook_dir):
-        for file in files:
-            if file.endswith(".ipynb"):
-                if notebook_is_in_virtualenv(pathlib.Path(root) / file):
-                    continue
-                notebook_path = pathlib.Path(root) / file
-                print(notebook_path)
-                with open(notebook_path, "r", encoding="UTF-8") as notebook_file:
-                    notebook_data = json.load(notebook_file)
-                try:
-                    check_notebook_run_order(notebook_data)
-                except (NotebookCodeCellNotRunError, NotebookRunOrderError) as error:
-                    raise InvalidNotebookRunError(
-                        f"Notebook {notebook_path} was not run in order.\n\n"
-                        # append the error message from the check_notebook_run_order function
-                        f"{error}\n\n"
-                    ) from error
+def process_path(path: str):
+    """Processes a single path. Raises an exception if the path is invalid."""
+    if os.path.isdir(path):
+        # Get all .ipynb files in the directory and its subdirectories
+        for dirpath, _, filenames in os.walk(path):
+            for filename in filenames:
+                notebok_path = pathlib.Path(dirpath) / filename
+                if filename.endswith(".ipynb") and not notebook_is_in_virtualenv(
+                    notebok_path
+                ):
+                    check_single_notebook(os.path.join(dirpath, filename))
+    elif path.endswith(".ipynb"):
+        check_single_notebook(path)
+    else:
+        raise ValueError(
+            f"Cannot check file {path}. "
+            "Must be a path to a notebook file with the .ipynb extension, or a directory."
+        )
 
 
 @click.command()
-@click.option(
-    "--path",
-    "-p",
-    default=".",
-    help="Path to a directory containing notebooks, or a single notebook. "
-    "If not specified, will search the entire repo",
-)
-def cli(path="."):
-    """Checks the run order of notebooks in the specified directory"""
-    if os.path.isdir(path):
-        check_all_repo_notebooks(path)
+@click.argument("paths", nargs=-1, type=click.Path(exists=True), required=False)
+def cli(paths: List[str] = None):
+    """
+    Checks the run order of notebooks in the specified paths,
+    or the entire repo if no paths are specified
+    """
+    if paths:
+        for path in paths:
+            process_path(path)
     else:
-        if not path.endswith(".ipynb"):
-            raise ValueError(
-                f"Invalid value passed to --path: {path}. "
-                "Must be a path to a notebook file with the .ipynb extension, or a directory."
-            )
-        notebook_path = pathlib.Path(path)
-        with open(notebook_path, "r", encoding="UTF-8") as notebook_file:
-            notebook_data = json.load(notebook_file)
-        try:
-            check_notebook_run_order(notebook_data)
-        except (NotebookCodeCellNotRunError, NotebookRunOrderError) as error:
-            raise InvalidNotebookRunError(
-                f"Notebook {notebook_path} was not run in order.\n\n"
-                # append the error message from the check_notebook_run_order function
-                f"{error}\n\n"
-            ) from error
+        # If no paths are provided, check the current directory
+        process_path(".")
 
 
 if __name__ == "__main__":  # pragma: no cover
