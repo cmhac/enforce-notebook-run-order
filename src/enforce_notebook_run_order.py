@@ -81,6 +81,7 @@ def check_single_notebook(path: str):
             # append the error message from the check_notebook_run_order function
             f"{error}\n\n"
         ) from error
+    print(f"Notebook {notebook_path} was run correctly.")
 
 
 def process_path(path: str):
