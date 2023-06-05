@@ -1,12 +1,12 @@
 """forces notebooks to run cells sequentially and fails if cells were run out of order"""
 
-import json
 import os
 import pathlib
 from typing import List
 import warnings
 import click
 import temp_notebook
+import utils
 
 
 class NotebookCodeCellNotRunError(Exception):
@@ -73,8 +73,7 @@ def check_notebook_run_order(notebook_data: dict) -> None:
 def check_single_notebook(notebook_path: str, no_run: bool = False):
     """Check a single notebook."""
     notebook_path = pathlib.Path(notebook_path)
-    with open(notebook_path, "r", encoding="UTF-8") as notebook_file:
-        notebook_data = json.load(notebook_file)
+    notebook_data = utils.load_notebook_data(notebook_path)
     try:
         check_notebook_run_order(notebook_data)
         if not no_run:

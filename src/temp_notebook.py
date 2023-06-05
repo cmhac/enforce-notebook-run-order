@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+import utils
 
 
 class InvalidNotebookJsonError(Exception):
@@ -61,8 +62,7 @@ class TempNotebook:
         # get the json data from the saved notebook
         # file will be at filename.nbconvert.ipynb
         output_file_path = self.notebook_path.with_suffix(".nbconvert.ipynb")
-        with open(output_file_path, "r", encoding="UTF-8") as output_file:
-            output_data = json.load(output_file)
+        output_data = utils.load_notebook_data(output_file_path)
         return output_data
 
     def compare_outputs(self, output_data: dict):
