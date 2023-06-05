@@ -69,15 +69,16 @@ def check_notebook_run_order(notebook_data: dict) -> None:
             previous_cell_number = current_cell_number
 
 
-def check_single_notebook(notebook_path: str):
+def check_single_notebook(notebook_path: str, no_run: bool = False):
     """Check a single notebook."""
     notebook_path = pathlib.Path(notebook_path)
     with open(notebook_path, "r", encoding="UTF-8") as notebook_file:
         notebook_data = json.load(notebook_file)
     try:
         check_notebook_run_order(notebook_data)
-        with temp_notebook.TempNotebook(notebook_data) as temp_nb:
-            temp_nb.check_notebook()
+        if not no_run:
+            with temp_notebook.TempNotebook(notebook_data) as temp_nb:
+                temp_nb.check_notebook()
     except (
         NotebookCodeCellNotRunError,
         NotebookRunOrderError,
@@ -90,7 +91,7 @@ def check_single_notebook(notebook_path: str):
     print(f"Notebook {notebook_path} was run correctly.")
 
 
-def process_path(path: str):
+def process_path(path: str, no_run: bool = False):
     """Processes a single path. Raises an exception if the path is invalid."""
     if os.path.isdir(path):
         # Get all .ipynb files in the directory and its subdirectories
@@ -100,7 +101,10 @@ def process_path(path: str):
                 if filename.endswith(".ipynb") and not notebook_is_in_virtualenv(
                     notebok_path
                 ):
-                    check_single_notebook(os.path.join(dirpath, filename))
+                    check_single_notebook(
+                        os.path.join(dirpath, filename),
+                        no_run=no_run,
+                    )
     elif path.endswith(".ipynb"):
         check_single_notebook(path)
     else:
@@ -112,17 +116,25 @@ def process_path(path: str):
 
 @click.command()
 @click.argument("paths", nargs=-1, type=click.Path(exists=True), required=False)
-def cli(paths: List[str] = None):
+@click.option(
+    "--no-run",
+    is_flag=True,
+    help="Do not run the notebooks, only check the run order. "
+    "This may miss some errors, but is useful for extremely long running notebooks. "
+    "If you use this option, you should consider moving the long-running code to a "
+    "separate task that runs separately from the notebook.",
+)
+def cli(paths: List[str] = None, no_run: bool = False):
     """
     Checks the run order of notebooks in the specified paths,
     or the entire repo if no paths are specified
     """
     if paths:
         for path in paths:
-            process_path(path)
+            process_path(path, no_run)
     else:
         # If no paths are provided, check the current directory
-        process_path(".")
+        process_path(".", no_run)
 
 
 if __name__ == "__main__":  # pragma: no cover
