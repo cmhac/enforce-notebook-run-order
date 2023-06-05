@@ -68,9 +68,9 @@ def check_notebook_run_order(notebook_data: dict) -> None:
             previous_cell_number = current_cell_number
 
 
-def check_single_notebook(path: str):
+def check_single_notebook(notebook_path: str):
     """Check a single notebook."""
-    notebook_path = pathlib.Path(path)
+    notebook_path = pathlib.Path(notebook_path)
     with open(notebook_path, "r", encoding="UTF-8") as notebook_file:
         notebook_data = json.load(notebook_file)
     try:
