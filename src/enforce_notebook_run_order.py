@@ -5,6 +5,7 @@ import os
 import pathlib
 from typing import List
 import click
+import temp_notebook
 
 
 class NotebookCodeCellNotRunError(Exception):
@@ -75,11 +76,16 @@ def check_single_notebook(notebook_path: str):
         notebook_data = json.load(notebook_file)
     try:
         check_notebook_run_order(notebook_data)
-    except (NotebookCodeCellNotRunError, NotebookRunOrderError) as error:
+        with temp_notebook.TempNotebook(notebook_data) as temp_nb:
+            temp_nb.check_notebook()
+    except (
+        NotebookCodeCellNotRunError,
+        NotebookRunOrderError,
+        temp_notebook.InvalidNotebookJsonError,
+        temp_notebook.CellOutputMismatchError,
+    ) as error:
         raise InvalidNotebookRunError(
-            f"Notebook {notebook_path} was not run in order.\n\n"
-            # append the error message from the check_notebook_run_order function
-            f"{error}\n\n"
+            f"Notebook {notebook_path} was not run in order.\n\n{error}\n\n"
         ) from error
     print(f"Notebook {notebook_path} was run correctly.")
 
