@@ -13,6 +13,12 @@ class InvalidNotebookJsonError(Exception):
     """
 
 
+class CellOutputMismatchError(Exception):
+    """
+    raised when the output of a code cell does not match the expected output
+    """
+
+
 class TempNotebook:
     """creates and runs a temporary notebook to verify outputs"""
 
@@ -58,6 +64,30 @@ class TempNotebook:
         with open(output_file_path, "r", encoding="UTF-8") as output_file:
             output_data = json.load(output_file)
         return output_data
+
+    def compare_outputs(self, output_data: dict):
+        """
+        compares the outputs of cells of the temporary notebook to the cells
+        of the output notebook
+        """
+        for cell_index, cell in enumerate(output_data["cells"]):
+            if cell["cell_type"] == "code":
+                # check that the output cell matches the input cell
+                if (
+                    cell["outputs"]
+                    != self.notebook_data["cells"][cell_index]["outputs"]
+                ):
+                    raise CellOutputMismatchError(
+                        f"Cell #{cell_index} output does not match the expected output.\n\n"
+                        f"Cell contents: \n\n> {cell}"
+                        "Expected output: \n\n> "
+                        f"{self.notebook_data['cells'][cell_index]['outputs']}"
+                    )
+
+    def check_notebook(self):
+        """runs the temporary notebook and compares the outputs"""
+        output_data = self.run()
+        self.compare_outputs(output_data)
 
     def __del__(self):
         """deletes the temporary directory"""

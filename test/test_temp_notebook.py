@@ -71,3 +71,9 @@ def test_run_invalid_json(invalid_notebook_data):
     with temp_notebook.TempNotebook(invalid_notebook_data) as temp_notebook_obj:
         with pytest.raises(temp_notebook.InvalidNotebookJsonError):
             temp_notebook_obj.run()
+
+
+def test_check_notebook_valid(valid_notebook_data):
+    """tests that the temp notebook passes with valid json"""
+    with temp_notebook.TempNotebook(valid_notebook_data) as temp_notebook_obj:
+        temp_notebook_obj.check_notebook()
