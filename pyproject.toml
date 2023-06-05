@@ -32,3 +32,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 enforce-notebook-run-order = "enforce_notebook_run_order:cli"
+nbcheck = "enforce_notebook_run_order:cli"
