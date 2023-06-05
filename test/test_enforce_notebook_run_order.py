@@ -172,7 +172,7 @@ def test_cli_valid_notebook_path_invalid_notebook():
         enforce_notebook_run_order.cli,
         [
             "test/test_data/enforce_notebook_run_order_invalid/test_subdirectory/"
-            "valid_subdirectory_notebook.ipynb",
+            "invalid_subdirectory_notebook.ipynb",
         ],
     )
     assert result.exit_code == 1
