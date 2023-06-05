@@ -67,7 +67,7 @@ def notebook_is_in_virtualenv(notebook_path: pathlib.Path) -> bool:
     return "site-packages" in str(notebook_path)
 
 
-def check_all_repo_notebooks(notebook_dir=".") -> None:
+def check_all_notebooks(notebook_dir=".") -> None:
     """
     Recursively searches for all Jupyter notebooks in the specified directory
     and checks their run order.
@@ -109,7 +109,7 @@ def check_all_repo_notebooks(notebook_dir=".") -> None:
 def cli(path="."):
     """Checks the run order of notebooks in the specified directory"""
     if os.path.isdir(path):
-        check_all_repo_notebooks(path)
+        check_all_notebooks(path)
     else:
         if not path.endswith(".ipynb"):
             raise ValueError(

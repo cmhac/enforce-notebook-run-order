@@ -90,7 +90,7 @@ def test_notebook_is_in_virtualenv():
     )
 
 
-def test_check_all_repo_notebooks_valid(mocker):
+def test_check_all_notebooks_valid(mocker):
     """
     Tests that check_notebook_run_order is called correctly
     for each notebook in a given folder.
@@ -103,12 +103,12 @@ def test_check_all_repo_notebooks_valid(mocker):
         "test", "test_data", "enforce_notebook_run_order_valid"
     )
 
-    enforce_notebook_run_order.check_all_repo_notebooks(test_data_dir)
+    enforce_notebook_run_order.check_all_notebooks(test_data_dir)
 
     assert mock_check_notebook_run_order.call_count == 2
 
 
-def test_check_all_repo_notebooks_invalid():
+def test_check_all_notebooks_invalid():
     """
     Tests that check_notebook_run_order raises InvalidNotebookRunError
     for each notebook in a given folder.
@@ -118,10 +118,10 @@ def test_check_all_repo_notebooks_invalid():
     )
 
     with pytest.raises(InvalidNotebookRunError):
-        enforce_notebook_run_order.check_all_repo_notebooks(test_data_dir)
+        enforce_notebook_run_order.check_all_notebooks(test_data_dir)
 
 
-def test_check_all_repo_notebooks_ignores_virtualenv(mocker):
+def test_check_all_notebooks_ignores_virtualenv(mocker):
     """
     Tests that check_notebook_run_order is not called for notebooks
     in a virtualenv.
@@ -142,7 +142,7 @@ def test_check_all_repo_notebooks_ignores_virtualenv(mocker):
         "test_data",
     )
 
-    enforce_notebook_run_order.check_all_repo_notebooks(test_data_dir)
+    enforce_notebook_run_order.check_all_notebooks(test_data_dir)
 
     assert mock_check_notebook_run_order.call_count == 0
 
