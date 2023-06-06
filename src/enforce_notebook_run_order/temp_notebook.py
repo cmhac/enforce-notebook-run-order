@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
@@ -48,23 +49,26 @@ class TempNotebook:
             NotebookRunFailedError: if the notebook fails to run because
                 the provided json is not a valid notebook
         """
-        try:
-            subprocess.run(
-                [
-                    "jupyter",
-                    "nbconvert",
-                    "--to",
-                    "notebook",
-                    "--execute",
-                    self.temp_notebook_path,
-                ],
-                check=True,
-            )
-        except subprocess.CalledProcessError as error:
+        resp = subprocess.run(
+            [
+                "jupyter",
+                "nbconvert",
+                "--to",
+                "notebook",
+                "--execute",
+                self.temp_notebook_path,
+            ],
+            capture_output=True,
+            check=False,
+            encoding="utf-8",
+            universal_newlines=True,
+        )
+        if resp.returncode != 0:
+            stderr_without_ansi = re.sub(r"\x1B\[[0-?]*[ -/]*[@-~]", "", resp.stderr)
             raise NotebookRunFailedError(
                 f"Notebook {self.temp_notebook_path} failed to run.\n\n"
-                f"Error message: {error}\n\n"
-            ) from error
+                f"Error message: {stderr_without_ansi}\n\n"
+            )
 
         # get the json data from the saved notebook
         # file will be at filename.nbconvert.ipynb
