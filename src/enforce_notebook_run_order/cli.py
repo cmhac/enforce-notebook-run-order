@@ -1,4 +1,4 @@
-"""command line interface for enforce_notebook_run_order"""
+"""Command-line interface for enforce_notebook_run_order"""
 
 from typing import List
 import warnings
@@ -20,6 +20,10 @@ def cli(paths: List[str] = None, no_run: bool = False):
     """
     Checks the run order of notebooks in the specified paths,
     or the entire repo if no paths are specified
+
+    Args:
+        paths: The paths to check. If no paths are specified, the current directory is checked.
+        no_run: If True, the notebooks will not be run. This may miss some errors, but is useful
     """
     if no_run:
         warnings.warn(

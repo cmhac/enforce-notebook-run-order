@@ -1,4 +1,4 @@
-"""forces notebooks to run cells sequentially and fails if cells were run out of order"""
+"""Forces notebooks to run cells sequentially and fails if cells were run out of order"""
 
 import os
 import pathlib
@@ -7,15 +7,15 @@ from . import utils
 
 
 class NotebookCodeCellNotRunError(Exception):
-    """raised when a notebook code cell was not run"""
+    """Raised when a notebook code cell was not run"""
 
 
 class NotebookRunOrderError(Exception):
-    """raised when a notebook is run out of order"""
+    """Raised when a notebook is run out of order"""
 
 
 class InvalidNotebookRunError(Exception):
-    """raised when any problems were identified with a notebook's run order"""
+    """Raised when any problems were identified with a notebook's run order"""
 
 
 def notebook_is_in_virtualenv(notebook_path: pathlib.Path) -> bool:
@@ -68,7 +68,15 @@ def check_notebook_run_order(notebook_data: dict) -> None:
 
 
 def check_single_notebook(notebook_path: str, no_run: bool = False):
-    """Check a single notebook."""
+    """Check a single notebook
+
+    Args:
+        notebook_path (str): Path to the notebook file.
+        no_run (bool, optional): If True, do not run the notebook. Defaults to False.
+
+    Raises:
+        InvalidNotebookRunError: If any problems were identified with the notebook's run order.
+    """
     notebook_path = pathlib.Path(notebook_path)
     notebook_data = utils.load_notebook_data(notebook_path)
     try:
@@ -89,7 +97,17 @@ def check_single_notebook(notebook_path: str, no_run: bool = False):
 
 
 def process_path(path: str, no_run: bool = False):
-    """Processes a single path. Raises an exception if the path is invalid."""
+    """
+    Processes a single path. Raises an exception if the path is invalid
+
+    Args:
+        path (str): Path to the notebook file or directory.
+        no_run (bool, optional): If True, do not run the notebook. Defaults to False.
+
+    Raises:
+        ValueError: If the path is invalid.
+    """
+
     if os.path.isdir(path):
         # Get all .ipynb files in the directory and its subdirectories
         for dirpath, _, filenames in os.walk(path):

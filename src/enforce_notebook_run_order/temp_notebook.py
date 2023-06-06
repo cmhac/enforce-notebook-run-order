@@ -1,4 +1,4 @@
-"""creates and runs a temporary notebook to verify outputs"""
+"""Creates and runs a temporary notebook to verify outputs"""
 
 import json
 from pathlib import Path
@@ -21,7 +21,7 @@ class CellOutputMismatchError(Exception):
 
 
 class TempNotebook:
-    """creates and runs a temporary notebook to verify outputs"""
+    """Creates and runs a temporary notebook to verify outputs"""
 
     def __init__(self, notebook_data: dict):
         """
@@ -34,13 +34,18 @@ class TempNotebook:
         self.create_temp_file()
 
     def create_temp_file(self):
-        """creates a temporary notebook file with the given notebook data"""
+        """Creates a temporary notebook file with the given notebook data"""
 
         with open(self.notebook_path, "w", encoding="UTF-8") as notebook_file:
             json.dump(self.notebook_data, notebook_file)
 
     def run(self):
-        """runs the temporary notebook"""
+        """Runs the temporary notebook
+
+        Raises:
+            InvalidNotebookJsonError: if the notebook fails to run because
+                the provided json is not a valid notebook
+        """
         try:
             subprocess.run(
                 [
@@ -69,6 +74,12 @@ class TempNotebook:
         """
         compares the outputs of cells of the temporary notebook to the cells
         of the output notebook
+
+        Args:
+            output_data (dict): the output notebook data
+
+        Raises:
+            CellOutputMismatchError: if the output of a cell does not match the expected output
         """
         code_cells = utils.get_code_cells(output_data)
         for cell_index, cell in enumerate(code_cells):
@@ -82,18 +93,18 @@ class TempNotebook:
                 )
 
     def check_notebook(self):
-        """runs the temporary notebook and compares the outputs"""
+        """Runs the temporary notebook and compares the outputs"""
         output_data = self.run()
         self.compare_outputs(output_data)
 
     def __del__(self):
-        """deletes the temporary directory"""
+        """Deletes the temporary directory"""
         shutil.rmtree(self.temp_dir)
 
     def __enter__(self):
-        """returns the path to the temporary notebook"""
+        """Returns the path to the temporary notebook"""
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        """deletes the temporary directory"""
+        """Deletes the temporary directory"""
         del self

@@ -9,7 +9,8 @@
    :maxdepth: 2
    :caption: Contents:
 
-   module_enforce_notebook_run_order
+   cli
+   python_api
 
 Indices and tables
 ==================
