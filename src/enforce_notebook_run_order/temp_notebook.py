@@ -2,13 +2,14 @@
 
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
 from . import utils
 
 
-class InvalidNotebookJsonError(Exception):
+class NotebookRunFailedError(Exception):
     """
     raised when a notebook fails to run because the provided json is not a valid notebook
     """
@@ -23,50 +24,50 @@ class CellOutputMismatchError(Exception):
 class TempNotebook:
     """Creates and runs a temporary notebook to verify outputs"""
 
-    def __init__(self, notebook_data: dict):
+    def __init__(self, notebook_path: str):
         """
         Args:
             notebook_path (Union[str, pathlib.Path]): Path to the notebook file.
         """
-        self.notebook_data = notebook_data
+        self.notebook_path = Path(notebook_path)
+        with open(self.notebook_path, "r", encoding="UTF-8") as notebook_file:
+            self.notebook_data = json.load(notebook_file)
         self.temp_dir = Path(tempfile.mkdtemp())
-        self.notebook_path = self.temp_dir / "temp_notebook.ipynb"
-        self.create_temp_file()
-
-    def create_temp_file(self):
-        """Creates a temporary notebook file with the given notebook data"""
-
-        with open(self.notebook_path, "w", encoding="UTF-8") as notebook_file:
-            json.dump(self.notebook_data, notebook_file)
+        self.output_notebook_path = self.temp_dir / "temp_notebook.ipynb"
 
     def run(self):
         """Runs the temporary notebook
 
         Raises:
-            InvalidNotebookJsonError: if the notebook fails to run because
+            NotebookRunFailedError: if the notebook fails to run because
                 the provided json is not a valid notebook
         """
-        try:
-            subprocess.run(
-                [
-                    "jupyter",
-                    "nbconvert",
-                    "--to",
-                    "notebook",
-                    "--execute",
-                    self.notebook_path,
-                ],
-                check=True,
+        resp = subprocess.run(
+            [
+                "jupyter",
+                "nbconvert",
+                "--to",
+                "notebook",
+                "--execute",
+                "--output",
+                self.output_notebook_path,
+                self.notebook_path,
+            ],
+            capture_output=True,
+            check=False,
+            encoding="utf-8",
+            universal_newlines=True,
+        )
+        if resp.returncode != 0:
+            stderr_without_ansi = re.sub(r"\x1B\[[0-?]*[ -/]*[@-~]", "", resp.stderr)
+            raise NotebookRunFailedError(
+                f"Notebook {self.output_notebook_path} failed to run.\n\n"
+                f"Error message: {stderr_without_ansi}\n\n"
             )
-        except subprocess.CalledProcessError as error:
-            raise InvalidNotebookJsonError(
-                f"Notebook {self.notebook_path} failed to run.\n\n"
-                f"Error message: {error}\n\n"
-            ) from error
 
         # get the json data from the saved notebook
         # file will be at filename.nbconvert.ipynb
-        output_file_path = self.notebook_path.with_suffix(".nbconvert.ipynb")
+        output_file_path = self.output_notebook_path
         output_data = utils.load_notebook_data(output_file_path)
         return output_data
 
