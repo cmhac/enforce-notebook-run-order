@@ -224,7 +224,7 @@ def test_run_valid_json(valid_notebook_data):
 def test_run_invalid_json(invalid_notebook_data):
     """tests that the temp notebook raises an exception with invalid json"""
     with temp_notebook.TempNotebook(invalid_notebook_data) as temp_notebook_obj:
-        with pytest.raises(temp_notebook.InvalidNotebookJsonError):
+        with pytest.raises(temp_notebook.NotebookRunFailedError):
             temp_notebook_obj.run()
 
 

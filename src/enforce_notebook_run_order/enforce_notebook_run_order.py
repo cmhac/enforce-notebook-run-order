@@ -87,7 +87,7 @@ def check_single_notebook(notebook_path: str, no_run: bool = False):
     except (
         NotebookCodeCellNotRunError,
         NotebookRunOrderError,
-        temp_notebook.InvalidNotebookJsonError,
+        temp_notebook.NotebookRunFailedError,
         temp_notebook.CellOutputMismatchError,
     ) as error:
         raise InvalidNotebookRunError(

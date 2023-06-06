@@ -8,7 +8,7 @@ import tempfile
 from . import utils
 
 
-class InvalidNotebookJsonError(Exception):
+class NotebookRunFailedError(Exception):
     """
     raised when a notebook fails to run because the provided json is not a valid notebook
     """
@@ -43,7 +43,7 @@ class TempNotebook:
         """Runs the temporary notebook
 
         Raises:
-            InvalidNotebookJsonError: if the notebook fails to run because
+            NotebookRunFailedError: if the notebook fails to run because
                 the provided json is not a valid notebook
         """
         try:
@@ -59,7 +59,7 @@ class TempNotebook:
                 check=True,
             )
         except subprocess.CalledProcessError as error:
-            raise InvalidNotebookJsonError(
+            raise NotebookRunFailedError(
                 f"Notebook {self.notebook_path} failed to run.\n\n"
                 f"Error message: {error}\n\n"
             ) from error
