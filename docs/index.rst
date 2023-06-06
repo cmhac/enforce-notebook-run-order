@@ -9,11 +9,5 @@
    :maxdepth: 2
    :caption: Contents:
 
-   module_enforce_notebook_run_order
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   cli
+   python_api

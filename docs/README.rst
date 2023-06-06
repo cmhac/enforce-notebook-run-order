@@ -45,10 +45,10 @@ Or point it to a directory to check all notebooks in that directory:
 
     nbcheck my_notebooks/
 
+If no paths are specified, ``nbcheck`` will check all notebooks in the current directory.
+
 You can also use the full ``enforce-notebook-run-order`` command, but the ``nbcheck`` command is
 provided as a convenience.
-
-For information on the command line interface, please refer to the `CLI documentation <module_enforce_notebook_run_order.html#command-line-interface>`__.
 
 pre-commit hook
 ^^^^^^^^^^^^^^^
@@ -62,3 +62,34 @@ To use ``enforce_notebook_run_order`` as a pre-commit hook, add the following to
         rev: 1.0.0
         hooks:
         -   id: enforce-notebook-run-order
+
+disabling output checks
+^^^^^^^^^^^^^^^^^^^^^^^
+
+By default, ``enforce-notebook-run-order`` will check that the output of each cell matches the
+output of the previous run. This will catch cases where a cell is run out of order, but the
+execution count is still sequential. However, this can be problematic if the output of a cell
+changes between runs, such as when using random numbers. It can also be problematic if the
+notebook runs for a long time.
+
+There are three ways to disable output checks:
+
+1. Disabling running all notebooks using the ``--no-run`` flag:
+
+   .. code-block:: bash
+
+       nbcheck --no-run my_notebook.ipynb
+
+2. Disabling running a single notebook using the ``no-run`` marker **in the first cell of the notebook**:
+
+    .. code-block:: python
+    
+         # no-run
+         print("This notebook will not be run")
+
+3. Disabling output checks for a single cell using the ``no-check-output`` marker:
+
+    .. code-block:: python
+    
+         # no-check-output
+         print("This cell will be run, but its output will not be checked")
