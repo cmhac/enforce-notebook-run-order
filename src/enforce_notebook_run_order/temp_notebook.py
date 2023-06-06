@@ -29,18 +29,11 @@ class TempNotebook:
         Args:
             notebook_path (Union[str, pathlib.Path]): Path to the notebook file.
         """
-        self.original_notebook_path = Path(notebook_path)
-        with open(self.original_notebook_path, "r", encoding="UTF-8") as notebook_file:
+        self.notebook_path = Path(notebook_path)
+        with open(self.notebook_path, "r", encoding="UTF-8") as notebook_file:
             self.notebook_data = json.load(notebook_file)
         self.temp_dir = Path(tempfile.mkdtemp())
-        self.temp_notebook_path = self.temp_dir / "temp_notebook.ipynb"
-        self.create_temp_file()
-
-    def create_temp_file(self):
-        """Creates a temporary notebook file with the given notebook data"""
-
-        with open(self.temp_notebook_path, "w", encoding="UTF-8") as notebook_file:
-            json.dump(self.notebook_data, notebook_file)
+        self.output_notebook_path = self.temp_dir / "temp_notebook.ipynb"
 
     def run(self):
         """Runs the temporary notebook
@@ -56,7 +49,9 @@ class TempNotebook:
                 "--to",
                 "notebook",
                 "--execute",
-                self.temp_notebook_path,
+                "--output",
+                self.output_notebook_path,
+                self.notebook_path,
             ],
             capture_output=True,
             check=False,
@@ -66,13 +61,13 @@ class TempNotebook:
         if resp.returncode != 0:
             stderr_without_ansi = re.sub(r"\x1B\[[0-?]*[ -/]*[@-~]", "", resp.stderr)
             raise NotebookRunFailedError(
-                f"Notebook {self.temp_notebook_path} failed to run.\n\n"
+                f"Notebook {self.output_notebook_path} failed to run.\n\n"
                 f"Error message: {stderr_without_ansi}\n\n"
             )
 
         # get the json data from the saved notebook
         # file will be at filename.nbconvert.ipynb
-        output_file_path = self.temp_notebook_path.with_suffix(".nbconvert.ipynb")
+        output_file_path = self.output_notebook_path
         output_data = utils.load_notebook_data(output_file_path)
         return output_data
 

@@ -224,14 +224,6 @@ def create_temp_nb_and_return_path(nb_json):
     return temp_nb_path
 
 
-def test_create_temp_file(valid_notebook_data):
-    """tests that the temp notebook creates a temporary file"""
-    with temp_notebook.TempNotebook(
-        create_temp_nb_and_return_path(valid_notebook_data)
-    ) as temp_notebook_obj:
-        assert os.path.exists(temp_notebook_obj.temp_notebook_path)
-
-
 def test_run_valid_json(valid_notebook_data):
     """tests that the temp notebook runs with valid json"""
     with temp_notebook.TempNotebook(
@@ -308,5 +300,25 @@ def test_check_notebook_no_check_output_comment(
     """tests that the temp notebook passes with invalid json"""
     with temp_notebook.TempNotebook(
         create_temp_nb_and_return_path(output_mismatch_data_no_check_output_comment)
+    ) as temp_notebook_obj:
+        temp_notebook_obj.check_notebook()
+
+
+def test_check_notebook_uses_external_data():
+    """tests that data files used by the notebook are copied to the temp directory"""
+    with temp_notebook.TempNotebook(
+        "test/test_data/temp_notebook_uses_external_data/temp_notebook_uses_external_data.ipynb"
+    ) as temp_notebook_obj:
+        temp_notebook_obj.check_notebook()
+
+
+def test_check_notebook_uses_external_data_directory():
+    """
+    tests that data files used by the notebook are copied to the temp directory
+    when the notebook references a directory
+    """
+    with temp_notebook.TempNotebook(
+        "test/test_data/temp_notebook_uses_external_data/"
+        "temp_notebook_uses_external_data_directory.ipynb"
     ) as temp_notebook_obj:
         temp_notebook_obj.check_notebook()
