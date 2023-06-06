@@ -3,12 +3,8 @@
 import os
 from click.testing import CliRunner
 import pytest
-import enforce_notebook_run_order
-from enforce_notebook_run_order import (
-    InvalidNotebookRunError,
-    NotebookCodeCellNotRunError,
-    NotebookRunOrderError,
-)
+from enforce_notebook_run_order import enforce_notebook_run_order
+from enforce_notebook_run_order.cli import cli
 
 # pylint: disable=redefined-outer-name
 
@@ -56,7 +52,7 @@ def test_check_notebook_run_order_valid(valid_notebook_data):
 
 def test_check_notebook_run_order_out_of_order(out_of_order_notebook_data):
     """Tests that out of order notebook data raises an error."""
-    with pytest.raises(NotebookRunOrderError) as error:
+    with pytest.raises(enforce_notebook_run_order.NotebookRunOrderError) as error:
         enforce_notebook_run_order.check_notebook_run_order(out_of_order_notebook_data)
 
     expected_error_message = (
@@ -70,7 +66,7 @@ def test_check_notebook_run_order_out_of_order(out_of_order_notebook_data):
 
 def test_check_notebook_run_order_cell_not_run(notebook_cell_not_run_data):
     """Tests that a notebook cell not run raises an error."""
-    with pytest.raises(NotebookCodeCellNotRunError) as error:
+    with pytest.raises(enforce_notebook_run_order.NotebookCodeCellNotRunError) as error:
         enforce_notebook_run_order.check_notebook_run_order(notebook_cell_not_run_data)
 
     expected_error_message = (
@@ -96,7 +92,7 @@ def test_process_path_valid(mocker):
     for each notebook in a given folder.
     """
     mock_check_notebook_run_order = mocker.patch(
-        "enforce_notebook_run_order.check_notebook_run_order"
+        "enforce_notebook_run_order.enforce_notebook_run_order.check_notebook_run_order"
     )
 
     test_data_dir = os.path.join(
@@ -117,7 +113,7 @@ def test_process_path_invalid():
         "test", "test_data", "enforce_notebook_run_order_invalid"
     )
 
-    with pytest.raises(InvalidNotebookRunError):
+    with pytest.raises(enforce_notebook_run_order.InvalidNotebookRunError):
         enforce_notebook_run_order.process_path(test_data_dir)
 
 
@@ -127,7 +123,7 @@ def test_process_path_ignores_virtualenv(mocker):
     in a virtualenv.
     """
     mock_check_notebook_run_order = mocker.patch(
-        "enforce_notebook_run_order.check_notebook_run_order"
+        "enforce_notebook_run_order.enforce_notebook_run_order.check_notebook_run_order"
     )
 
     test_data_dir = os.path.join(
@@ -157,7 +153,7 @@ def test_cli_valid_notebook_path_valid_notebook():
     """Tests that the CLI returns 0 when given a valid notebook path."""
     runner = CliRunner()
     result = runner.invoke(
-        enforce_notebook_run_order.cli,
+        cli,
         [
             "test/test_data/enforce_notebook_run_order_valid/valid_notebook.ipynb",
         ],
@@ -169,7 +165,7 @@ def test_cli_valid_notebook_path_invalid_notebook():
     """Tests that the CLI returns 1 when given an invalid notebook path."""
     runner = CliRunner()
     result = runner.invoke(
-        enforce_notebook_run_order.cli,
+        cli,
         [
             "test/test_data/enforce_notebook_run_order_invalid/test_subdirectory/"
             "invalid_subdirectory_notebook.ipynb",
@@ -182,7 +178,7 @@ def test_cli_valid_notebook_dir_valid_notebooks():
     """Tests that the CLI returns 0 when given a valid notebook_dir."""
     runner = CliRunner()
     result = runner.invoke(
-        enforce_notebook_run_order.cli,
+        cli,
         [
             "test/test_data/enforce_notebook_run_order_valid",
         ],
@@ -194,10 +190,10 @@ def test_cli_no_paths_searches_entire_dir(mocker):
     """
     Tests that the CLI searches the entire current directory if no paths are specified.
     """
-    mock_process_path = mocker.patch("enforce_notebook_run_order.process_path")
+    mock_process_path = mocker.patch("enforce_notebook_run_order.cli.process_path")
 
     runner = CliRunner()
-    result = runner.invoke(enforce_notebook_run_order.cli)
+    result = runner.invoke(cli)
 
     # The process_path function should be called once, with the current directory as its argument
     mock_process_path.assert_called_once_with(".", False)
@@ -210,12 +206,13 @@ def test_cli_no_run_option(mocker):
     Tests that process_path is called with the correct run option
     when the --no-run option is specified, and a warning was was printed
     """
-    mock_process_path = mocker.patch("enforce_notebook_run_order.process_path")
-    mock_warning = mocker.patch("enforce_notebook_run_order.warnings.warn")
+    mock_process_path = mocker.patch("enforce_notebook_run_order.cli.process_path")
+
+    mock_warning = mocker.patch("warnings.warn")
 
     runner = CliRunner()
     result = runner.invoke(
-        enforce_notebook_run_order.cli,
+        cli,
         [
             "test/test_data/enforce_notebook_run_order_valid",
             "--no-run",

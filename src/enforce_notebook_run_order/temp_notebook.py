@@ -5,7 +5,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
-import utils
+from . import utils
 
 
 class InvalidNotebookJsonError(Exception):

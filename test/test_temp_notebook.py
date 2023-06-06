@@ -2,7 +2,7 @@
 
 import os
 import pytest
-import temp_notebook
+from enforce_notebook_run_order import temp_notebook
 
 # pylint: disable=redefined-outer-name
 

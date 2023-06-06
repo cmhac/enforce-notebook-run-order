@@ -2,11 +2,8 @@
 
 import os
 import pathlib
-from typing import List
-import warnings
-import click
-import temp_notebook
-import utils
+from . import temp_notebook
+from . import utils
 
 
 class NotebookCodeCellNotRunError(Exception):
@@ -112,38 +109,3 @@ def process_path(path: str, no_run: bool = False):
             f"Cannot check file {path}. "
             "Must be a path to a notebook file with the .ipynb extension, or a directory."
         )
-
-
-@click.command()
-@click.argument("paths", nargs=-1, type=click.Path(exists=True), required=False)
-@click.option(
-    "--no-run",
-    is_flag=True,
-    help="Do not run the notebooks, only check the run order. "
-    "This may miss some errors, but is useful for extremely long running notebooks. "
-    "If you use this option, you should consider moving the long-running code to a "
-    "separate task that runs separately from the notebook.",
-)
-def cli(paths: List[str] = None, no_run: bool = False):
-    """
-    Checks the run order of notebooks in the specified paths,
-    or the entire repo if no paths are specified
-    """
-    if no_run:
-        warnings.warn(
-            "The --no-run option will not catch all problems with notebooks. "
-            "It is possible that the checks will pass, but the notebook was still run "
-            "out of order. It is highly recommended to move any long-running code to a separate "
-            "task that runs separately from the notebook."
-        )
-
-    if paths:
-        for path in paths:
-            process_path(path, no_run)
-    else:
-        # If no paths are provided, check the current directory
-        process_path(".", no_run)
-
-
-if __name__ == "__main__":  # pragma: no cover
-    cli()

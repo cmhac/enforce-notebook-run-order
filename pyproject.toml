@@ -7,7 +7,7 @@ license = "MIT"
 urls = { homepage = "https://github.com/christopher-hacker/enforce-notebook-run-order" }
 readme = "README.md"
 packages = [
-    { include = "*", from = "src" },
+    { include = "enforce_notebook_run_order", from = "src" },
 ]
 
 [tool.poetry.dependencies]
@@ -31,5 +31,5 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-enforce-notebook-run-order = "enforce_notebook_run_order:cli"
-nbcheck = "enforce_notebook_run_order:cli"
+enforce-notebook-run-order = "enforce_notebook_run_order.cli:cli"
+nbcheck = "enforce_notebook_run_order.cli:cli"
