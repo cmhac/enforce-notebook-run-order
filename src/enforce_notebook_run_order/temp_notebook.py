@@ -82,12 +82,23 @@ class TempNotebook:
             CellOutputMismatchError: if the output of a cell does not match the expected output
         """
         code_cells = utils.get_code_cells(output_data)
-        for cell_index, cell in enumerate(code_cells):
+        # if the first cell has the no-run comment, exit early
+        if utils.cell_has_no_run_comment(code_cells[0]):
+            return
+
+        for cell_index, cell_data in enumerate(code_cells):
+            # if the cell has a no-check-output comment, skip checking it
+            if utils.cell_has_no_check_output_comment(cell_data):
+                continue
+
             # check that the output cell matches the input cell
-            if cell["outputs"] != self.notebook_data["cells"][cell_index]["outputs"]:
+            if (
+                cell_data["outputs"]
+                != self.notebook_data["cells"][cell_index]["outputs"]
+            ):
                 raise CellOutputMismatchError(
                     f"Cell #{cell_index} output does not match the expected output.\n\n"
-                    f"Cell contents: \n\n> {cell}"
+                    f"Cell contents: \n\n> {cell_data}"
                     "Expected output: \n\n> "
                     f"{self.notebook_data['cells'][cell_index]['outputs']}"
                 )
