@@ -82,7 +82,7 @@ def check_single_notebook(notebook_path: str, no_run: bool = False):
     try:
         check_notebook_run_order(notebook_data)
         if not no_run:
-            with temp_notebook.TempNotebook(notebook_data) as temp_nb:
+            with temp_notebook.TempNotebook(notebook_path) as temp_nb:
                 temp_nb.check_notebook()
     except (
         NotebookCodeCellNotRunError,

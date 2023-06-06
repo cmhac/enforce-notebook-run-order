@@ -1,6 +1,8 @@
 """tests the temp notebook module"""
 
+import json
 import os
+import tempfile
 import pytest
 from enforce_notebook_run_order import temp_notebook
 
@@ -9,7 +11,9 @@ from enforce_notebook_run_order import temp_notebook
 
 @pytest.fixture
 def valid_notebook_data():
-    """returns the complete json of a jupyter notebook with 1 cell"""
+    """
+    returns the path to a tempfile containing complete json of a jupyter notebook with 1 cell
+    """
     return {
         "cells": [
             {
@@ -209,34 +213,55 @@ def output_mismatch_data_no_check_output_comment():
     }
 
 
+def create_temp_nb_and_return_path(nb_json):
+    """
+    creates a temp notebook file and returns the path to it
+    """
+    temp_dir = tempfile.mkdtemp()
+    temp_nb_path = os.path.join(temp_dir, "temp_nb.ipynb")
+    with open(temp_nb_path, "w", encoding="UTF-8") as notebook_file:
+        json.dump(nb_json, notebook_file)
+    return temp_nb_path
+
+
 def test_create_temp_file(valid_notebook_data):
     """tests that the temp notebook creates a temporary file"""
-    with temp_notebook.TempNotebook(valid_notebook_data) as temp_notebook_obj:
-        assert os.path.exists(temp_notebook_obj.notebook_path)
+    with temp_notebook.TempNotebook(
+        create_temp_nb_and_return_path(valid_notebook_data)
+    ) as temp_notebook_obj:
+        assert os.path.exists(temp_notebook_obj.temp_notebook_path)
 
 
 def test_run_valid_json(valid_notebook_data):
     """tests that the temp notebook runs with valid json"""
-    with temp_notebook.TempNotebook(valid_notebook_data) as temp_notebook_obj:
+    with temp_notebook.TempNotebook(
+        create_temp_nb_and_return_path(valid_notebook_data)
+    ) as temp_notebook_obj:
         temp_notebook_obj.run()
 
 
 def test_run_invalid_json(invalid_notebook_data):
     """tests that the temp notebook raises an exception with invalid json"""
-    with temp_notebook.TempNotebook(invalid_notebook_data) as temp_notebook_obj:
+    with temp_notebook.TempNotebook(
+        create_temp_nb_and_return_path(invalid_notebook_data)
+    ) as temp_notebook_obj:
         with pytest.raises(temp_notebook.NotebookRunFailedError):
             temp_notebook_obj.run()
 
 
 def test_check_notebook_valid(valid_notebook_data):
     """tests that the temp notebook passes with valid json"""
-    with temp_notebook.TempNotebook(valid_notebook_data) as temp_notebook_obj:
+    with temp_notebook.TempNotebook(
+        create_temp_nb_and_return_path(valid_notebook_data)
+    ) as temp_notebook_obj:
         temp_notebook_obj.check_notebook()
 
 
 def test_check_notebook_invalid(output_mismatch_data):
     """tests that the temp notebook fails with invalid json"""
-    with temp_notebook.TempNotebook(output_mismatch_data) as temp_notebook_obj:
+    with temp_notebook.TempNotebook(
+        create_temp_nb_and_return_path(output_mismatch_data)
+    ) as temp_notebook_obj:
         with pytest.raises(temp_notebook.CellOutputMismatchError):
             temp_notebook_obj.check_notebook()
 
@@ -248,7 +273,7 @@ def test_output_mismatch_data_no_run_comment(output_mismatch_data_no_run_comment
     # delete the cell with the comment for this test
     del output_mismatch_data_no_run_comment["cells"][0]
     with temp_notebook.TempNotebook(
-        output_mismatch_data_no_run_comment
+        create_temp_nb_and_return_path(output_mismatch_data_no_run_comment)
     ) as temp_notebook_obj:
         with pytest.raises(temp_notebook.CellOutputMismatchError):
             temp_notebook_obj.check_notebook()
@@ -257,7 +282,7 @@ def test_output_mismatch_data_no_run_comment(output_mismatch_data_no_run_comment
 def test_check_notebook_no_run_comment(output_mismatch_data_no_run_comment):
     """tests that the temp notebook passes with invalid json"""
     with temp_notebook.TempNotebook(
-        output_mismatch_data_no_run_comment
+        create_temp_nb_and_return_path(output_mismatch_data_no_run_comment)
     ) as temp_notebook_obj:
         temp_notebook_obj.check_notebook()
 
@@ -271,7 +296,7 @@ def test_output_mismatch_data_no_check_output_comment(
     # delete the comment for this test
     del output_mismatch_data_no_check_output_comment["cells"][1]["source"][0]
     with temp_notebook.TempNotebook(
-        output_mismatch_data_no_check_output_comment
+        create_temp_nb_and_return_path(output_mismatch_data_no_check_output_comment)
     ) as temp_notebook_obj:
         with pytest.raises(temp_notebook.CellOutputMismatchError):
             temp_notebook_obj.check_notebook()
@@ -282,6 +307,6 @@ def test_check_notebook_no_check_output_comment(
 ):
     """tests that the temp notebook passes with invalid json"""
     with temp_notebook.TempNotebook(
-        output_mismatch_data_no_check_output_comment
+        create_temp_nb_and_return_path(output_mismatch_data_no_check_output_comment)
     ) as temp_notebook_obj:
         temp_notebook_obj.check_notebook()

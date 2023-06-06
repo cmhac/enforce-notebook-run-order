@@ -23,20 +23,22 @@ class CellOutputMismatchError(Exception):
 class TempNotebook:
     """Creates and runs a temporary notebook to verify outputs"""
 
-    def __init__(self, notebook_data: dict):
+    def __init__(self, notebook_path: str):
         """
         Args:
             notebook_path (Union[str, pathlib.Path]): Path to the notebook file.
         """
-        self.notebook_data = notebook_data
+        self.original_notebook_path = Path(notebook_path)
+        with open(self.original_notebook_path, "r", encoding="UTF-8") as notebook_file:
+            self.notebook_data = json.load(notebook_file)
         self.temp_dir = Path(tempfile.mkdtemp())
-        self.notebook_path = self.temp_dir / "temp_notebook.ipynb"
+        self.temp_notebook_path = self.temp_dir / "temp_notebook.ipynb"
         self.create_temp_file()
 
     def create_temp_file(self):
         """Creates a temporary notebook file with the given notebook data"""
 
-        with open(self.notebook_path, "w", encoding="UTF-8") as notebook_file:
+        with open(self.temp_notebook_path, "w", encoding="UTF-8") as notebook_file:
             json.dump(self.notebook_data, notebook_file)
 
     def run(self):
@@ -54,19 +56,19 @@ class TempNotebook:
                     "--to",
                     "notebook",
                     "--execute",
-                    self.notebook_path,
+                    self.temp_notebook_path,
                 ],
                 check=True,
             )
         except subprocess.CalledProcessError as error:
             raise NotebookRunFailedError(
-                f"Notebook {self.notebook_path} failed to run.\n\n"
+                f"Notebook {self.temp_notebook_path} failed to run.\n\n"
                 f"Error message: {error}\n\n"
             ) from error
 
         # get the json data from the saved notebook
         # file will be at filename.nbconvert.ipynb
-        output_file_path = self.notebook_path.with_suffix(".nbconvert.ipynb")
+        output_file_path = self.temp_notebook_path.with_suffix(".nbconvert.ipynb")
         output_data = utils.load_notebook_data(output_file_path)
         return output_data
 
