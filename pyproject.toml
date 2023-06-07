@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "enforce-notebook-run-order"
-version = "1.4.0"
+version = "1.4.1"
 description = ""
 authors = ["Chris Hacker <49451910+christopher-hacker@users.noreply.github.com>"]
 license = "MIT"
