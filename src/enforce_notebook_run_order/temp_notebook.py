@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 from . import utils
 
@@ -44,6 +45,8 @@ class TempNotebook:
         """
         resp = subprocess.run(
             [
+                sys.executable,
+                "-m",
                 "jupyter",
                 "nbconvert",
                 "--to",
