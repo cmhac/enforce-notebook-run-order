@@ -121,7 +121,7 @@ def process_path(path: str, no_run: bool = False):
                         no_run=no_run,
                     )
     elif path.endswith(".ipynb"):
-        check_single_notebook(path)
+        check_single_notebook(path, no_run=no_run)
     else:
         raise ValueError(
             f"Cannot check file {path}. "
