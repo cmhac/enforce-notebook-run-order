@@ -42,7 +42,8 @@ class TempNotebook:
         """Runs the temporary notebook and captures its output.
 
         Raises:
-            NotebookRunFailedError: If the notebook fails to run because the provided JSON is not a valid notebook.
+            NotebookRunFailedError: If the notebook fails to run because the
+            provided JSON is not a valid notebook.
 
         Returns:
             dict: The notebook data of the executed notebook.
