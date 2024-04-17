@@ -12,13 +12,13 @@ from . import utils
 
 class NotebookRunFailedError(Exception):
     """
-    raised when a notebook fails to run because the provided json is not a valid notebook
+    Raised when a notebook fails to run because the provided JSON is not a valid notebook.
     """
 
 
 class CellOutputMismatchError(Exception):
     """
-    raised when the output of a code cell does not match the expected output
+    Raised when the output of a code cell does not match the expected output.
     """
 
 
@@ -27,8 +27,10 @@ class TempNotebook:
 
     def __init__(self, notebook_path: str):
         """
+        Initializes a temporary notebook from the specified path.
+
         Args:
-            notebook_path (Union[str, pathlib.Path]): Path to the notebook file.
+            notebook_path (str): Path to the notebook file.
         """
         self.notebook_path = Path(notebook_path)
         with open(self.notebook_path, "r", encoding="UTF-8") as notebook_file:
@@ -36,12 +38,14 @@ class TempNotebook:
         self.temp_dir = Path(tempfile.mkdtemp())
         self.output_notebook_path = self.temp_dir / "temp_notebook.ipynb"
 
-    def run(self):
-        """Runs the temporary notebook
+    def run(self) -> dict:
+        """Runs the temporary notebook and captures its output.
 
         Raises:
-            NotebookRunFailedError: if the notebook fails to run because
-                the provided json is not a valid notebook
+            NotebookRunFailedError: If the notebook fails to run because the provided JSON is not a valid notebook.
+
+        Returns:
+            dict: The notebook data of the executed notebook.
         """
         resp = subprocess.run(
             [
@@ -76,14 +80,13 @@ class TempNotebook:
 
     def compare_outputs(self, output_data: dict):
         """
-        compares the outputs of cells of the temporary notebook to the cells
-        of the output notebook
+        Compares the outputs of code cells between the temporary and original notebook.
 
         Args:
-            output_data (dict): the output notebook data
+            output_data (dict): The output notebook data from the executed notebook.
 
         Raises:
-            CellOutputMismatchError: if the output of a cell does not match the expected output
+            CellOutputMismatchError: If the output of a cell does not match the expected output.
         """
         code_cells = utils.get_code_cells(output_data)
         # if the first cell has the no-run comment, exit early
@@ -117,9 +120,9 @@ class TempNotebook:
         shutil.rmtree(self.temp_dir)
 
     def __enter__(self):
-        """Returns the path to the temporary notebook"""
+        """Enables use with the with-statement context manager"""
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        """Deletes the temporary directory"""
+        """Cleans up by deleting the temporary directory"""
         del self

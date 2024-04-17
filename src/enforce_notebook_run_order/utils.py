@@ -1,10 +1,10 @@
 """Contains shared functionality used across multiple modules"""
 
 import json
-from typing import Union
+from typing import Union, Dict, List, Optional
 
 
-def load_notebook_data(notebook_path: str) -> dict:  # pragma: no cover
+def load_notebook_data(notebook_path: str) -> Dict:
     """Loads the notebook data from the given path
 
     Args:
@@ -18,7 +18,7 @@ def load_notebook_data(notebook_path: str) -> dict:  # pragma: no cover
     return notebook_data
 
 
-def get_code_cells(notebook_data: dict) -> list:  # pragma: no cover
+def get_code_cells(notebook_data: Dict) -> List[Dict]:
     """Returns a list of code cells from the notebook data
 
     Args:
@@ -34,7 +34,7 @@ def get_code_cells(notebook_data: dict) -> list:  # pragma: no cover
     return code_cells
 
 
-def parse_cell_comment(cell: dict) -> Union[str, None]:
+def parse_cell_comment(cell: Dict) -> Optional[str]:
     """Returns the comment from the first line of the cell, if present
 
     Args:
@@ -49,7 +49,7 @@ def parse_cell_comment(cell: dict) -> Union[str, None]:
     return None
 
 
-def cell_has_no_run_comment(cell_data: dict):
+def cell_has_no_run_comment(cell_data: Dict) -> bool:
     """Returns True if the cell has a no-run comment
 
     Args:
@@ -58,14 +58,11 @@ def cell_has_no_run_comment(cell_data: dict):
     Returns:
         bool: True if the cell has a no-run comment
     """
-
     comment = parse_cell_comment(cell_data)
-    if comment is None:
-        return False
-    return comment.lower() == "no-run"
+    return comment is not None and comment.lower() == "no-run"
 
 
-def cell_has_no_check_output_comment(cell_data: dict):
+def cell_has_no_check_output_comment(cell_data: Dict) -> bool:
     """Returns True if the cell has a no-check-output comment
 
     Args:
@@ -75,6 +72,4 @@ def cell_has_no_check_output_comment(cell_data: dict):
         bool: True if the cell has a no-check-output comment
     """
     comment = parse_cell_comment(cell_data)
-    if comment is None:
-        return False
-    return comment.lower() == "no-check-output"
+    return comment is not None and comment.lower() == "no-check-output"

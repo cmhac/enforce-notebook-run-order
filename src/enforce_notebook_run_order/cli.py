@@ -1,10 +1,9 @@
 """Command-line interface for enforce_notebook_run_order"""
 
-from typing import List
+from typing import List, Tuple
 import warnings
 import click
 from .enforce_notebook_run_order import process_path
-
 
 @click.command()
 @click.argument("paths", nargs=-1, type=click.Path(exists=True), required=False)
@@ -16,7 +15,7 @@ from .enforce_notebook_run_order import process_path
     "If you use this option, you should consider moving the long-running code to a "
     "separate task that runs separately from the notebook.",
 )
-def cli(paths: List[str] = None, no_run: bool = False):
+def cli(paths: Tuple[str, ...] = None, no_run: bool = False):
     """
     Checks the run order of notebooks in the specified paths,
     or the entire repo if no paths are specified
