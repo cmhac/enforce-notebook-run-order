@@ -14,9 +14,9 @@ def valid_notebook_data():
     """Returns valid test notebook json."""
     return {
         "cells": [
-            {"cell_type": "code", "execution_count": 1},
-            {"cell_type": "code", "execution_count": 2},
-            {"cell_type": "code", "execution_count": 3},
+            {"cell_type": "code", "execution_count": 1, "source": ["print('foo')"]},
+            {"cell_type": "code", "execution_count": 2, "source": ["print('foo')"]},
+            {"cell_type": "code", "execution_count": 3, "source": ["print('foo')"]},
         ]
     }
 
@@ -26,9 +26,9 @@ def out_of_order_notebook_data():
     """Returns invalid test notebook json."""
     return {
         "cells": [
-            {"cell_type": "code", "execution_count": 1},
-            {"cell_type": "code", "execution_count": 3},
-            {"cell_type": "code", "execution_count": 2},
+            {"cell_type": "code", "execution_count": 1, "source": ["print('foo')"]},
+            {"cell_type": "code", "execution_count": 3, "source": ["print('foo')"]},
+            {"cell_type": "code", "execution_count": 2, "source": ["print('foo')"]},
         ]
     }
 
@@ -38,9 +38,21 @@ def notebook_cell_not_run_data():
     """Returns invalid test notebook json."""
     return {
         "cells": [
-            {"cell_type": "code", "execution_count": 1},
-            {"cell_type": "code", "execution_count": 2},
-            {"cell_type": "code", "execution_count": None},
+            {"cell_type": "code", "execution_count": 1, "source": ["print('foo')"]},
+            {"cell_type": "code", "execution_count": 2, "source": ["print('foo')"]},
+            {"cell_type": "code", "execution_count": None, "source": ["print('foo')"]},
+        ]
+    }
+
+
+@pytest.fixture
+def empty_notebook_cells():
+    """Returns empty notebook cells."""
+    return {
+        "cells": [
+            {"cell_type": "code", "execution_count": 1, "source": []},
+            {"cell_type": "code", "execution_count": None, "source": []},
+            {"cell_type": "code", "execution_count": None, "source": []},
         ]
     }
 
@@ -59,7 +71,8 @@ def test_check_notebook_run_order_out_of_order(out_of_order_notebook_data):
         "Cells were not run sequentially. "
         "The cell that caused this error is #3 "
         "and the previous cell was #1. \n\n"
-        "Cell contents: \n\n> {'cell_type': 'code', 'execution_count': 3}"
+        "Cell contents: \n\n> {'cell_type': 'code', 'execution_count': 3, "
+        "'source': [\"print('foo')\"]}"
     )
     assert str(error.value) == expected_error_message
 
@@ -71,9 +84,15 @@ def test_check_notebook_run_order_cell_not_run(notebook_cell_not_run_data):
 
     expected_error_message = (
         "Code cell was not run. The previous cell was #2. \n\n"
-        "Cell contents: \n\n> {'cell_type': 'code', 'execution_count': None}"
+        "Cell contents: \n\n> {'cell_type': 'code', 'execution_count': None, "
+        "'source': [\"print('foo')\"]}"
     )
     assert str(error.value) == expected_error_message
+
+
+def test_check_notebook_run_order_empty_cells(empty_notebook_cells):
+    """Tests that empty notebook cells do not raise an error."""
+    enforce_notebook_run_order.check_notebook_run_order(empty_notebook_cells)
 
 
 def test_notebook_is_in_virtualenv():
