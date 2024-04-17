@@ -1,9 +1,10 @@
 """Command-line interface for enforce_notebook_run_order"""
 
-from typing import List, Tuple
+from typing import Tuple
 import warnings
 import click
 from .enforce_notebook_run_order import process_path
+
 
 @click.command()
 @click.argument("paths", nargs=-1, type=click.Path(exists=True), required=False)

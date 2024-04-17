@@ -1,7 +1,7 @@
 """Contains shared functionality used across multiple modules"""
 
 import json
-from typing import Union, Dict, List, Optional
+from typing import Dict, List, Optional
 
 
 def load_notebook_data(notebook_path: str) -> Dict:
