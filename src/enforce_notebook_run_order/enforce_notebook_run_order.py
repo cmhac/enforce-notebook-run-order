@@ -2,7 +2,6 @@
 
 import os
 from typing import Dict
-from . import temp_notebook
 from . import utils
 
 
@@ -16,25 +15,6 @@ class NotebookRunOrderError(Exception):
 
 class InvalidNotebookRunError(Exception):
     """Raised when any problems were identified with a notebook's run order"""
-
-
-def notebook_is_in_virtualenv(notebook_path: str) -> bool:
-    """
-    Checks whether a notebook is in the current repo or is in the virtual environment's
-    site-packages directory.
-
-    Some dependencies may contain Jupyter notebooks in their site-packages directory for
-    testing or documentation purposes. These notebooks should not be checked for run order.
-
-    Args:
-        notebook_path: Path to the notebook file.
-
-    Returns:
-        bool: True if the notebook is in the virtual environment's site-packages directory.
-    """
-    # if the notebook_path contains "site-packages", it is in the virtual environment
-    # and should not be checked
-    return "site-packages" in notebook_path
 
 
 def check_notebook_run_order(notebook_data: Dict) -> None:
@@ -70,7 +50,7 @@ def check_notebook_run_order(notebook_data: Dict) -> None:
         previous_cell_number = current_cell_number
 
 
-def check_single_notebook(notebook_path: str, no_run: bool = False) -> None:
+def check_single_notebook(notebook_path: str) -> None:
     """
     Check a single notebook
 
@@ -84,14 +64,9 @@ def check_single_notebook(notebook_path: str, no_run: bool = False) -> None:
     notebook_data = utils.load_notebook_data(notebook_path)
     try:
         check_notebook_run_order(notebook_data)
-        if not no_run:
-            with temp_notebook.TempNotebook(notebook_path) as temp_nb:
-                temp_nb.check_notebook()
     except (
         NotebookCodeCellNotRunError,
         NotebookRunOrderError,
-        temp_notebook.NotebookRunFailedError,
-        temp_notebook.CellOutputMismatchError,
     ) as error:
         raise InvalidNotebookRunError(
             f"Notebook {notebook_path} was not run in order.\n\n{error}\n\n"
@@ -99,7 +74,7 @@ def check_single_notebook(notebook_path: str, no_run: bool = False) -> None:
     print(f"Notebook {notebook_path} was run correctly.")
 
 
-def process_path(path: str, no_run: bool = False) -> None:
+def process_path(path: str) -> None:
     """
     Processes a single path. Raises an exception if the path is invalid
 
@@ -115,12 +90,10 @@ def process_path(path: str, no_run: bool = False) -> None:
         for dirpath, _, filenames in os.walk(path):
             for filename in filenames:
                 notebook_path = os.path.join(dirpath, filename)
-                if filename.endswith(".ipynb") and not notebook_is_in_virtualenv(
-                    notebook_path
-                ):
-                    check_single_notebook(notebook_path, no_run=no_run)
+                if filename.endswith(".ipynb"):
+                    check_single_notebook(notebook_path)
     elif path.endswith(".ipynb"):
-        check_single_notebook(path, no_run=no_run)
+        check_single_notebook(path)
     else:
         raise ValueError(
             f"Cannot check file {path}. "
