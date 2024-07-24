@@ -12,7 +12,7 @@ setup:
 	pre-commit install
 
 test:
-	poetry run pytest --cov
+	poetry run pytest --cov test
 	poetry run coverage html
 
 docs:

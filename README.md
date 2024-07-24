@@ -80,7 +80,7 @@ following to your `.pre-commit-config.yaml`:
 ``` {.sourceCode .yaml}
 repos:
 -   repo: https://github.com/christopher-hacker/enforce-notebook-run-order
-    rev: 2.0.0
+    rev: 2.0.1
     hooks:
     -   id: enforce-notebook-run-order
 ```

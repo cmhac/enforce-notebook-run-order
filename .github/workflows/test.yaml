@@ -37,7 +37,7 @@ jobs:
           poetry run pylint $(git ls-files '*.py')
       - name: Test with pytest
         run: |
-          poetry run pytest src test --cov
+          poetry run pytest --cov test
           poetry run coverage xml
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3

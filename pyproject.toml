@@ -1,10 +1,15 @@
 [tool.poetry]
 name = "enforce-notebook-run-order"
-version = "2.0.0"
+version = "2.0.1"
 description = "Don't let notebook cells run out of order"
 authors = ["Chris Hacker <c.m.hacker1997@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [{ include = "enforce_notebook_run_order" }]
+
+[tool.poetry.scripts]
+enforce-notebook-run-order = "enforce_notebook_run_order.cli:cli"
+nbcheck = "enforce_notebook_run_order.cli:cli"
 
 [tool.poetry.dependencies]
 python = "^3.9"
