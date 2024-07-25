@@ -13,9 +13,7 @@ nbcheck = "enforce_notebook_run_order.cli:cli"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-jupyter = "^1.0.0"
 click = "^8.1.7"
-pre-commit = "^3.7.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.2"
