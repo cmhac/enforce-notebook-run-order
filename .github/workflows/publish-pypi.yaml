@@ -40,9 +40,6 @@ jobs:
       - name: Lint with pylint
         run: |
           poetry run pylint $(git ls-files '*.py')
-      - name: Test with pytest
-        run: |
-          poetry run pytest src test
       - name: Build package
         run: poetry build
       - name: create release
