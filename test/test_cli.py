@@ -130,3 +130,89 @@ def test_cli_no_args_exits_with_error_on_invalid_notebook():
     result = runner.invoke(cli)
 
     assert result.exit_code == 1
+
+
+# E2E tests for multi-language notebook support
+
+
+def test_cli_valid_r_notebook():
+    """E2E test: CLI returns 0 for a valid R notebook."""
+    runner = CliRunner()
+    result = runner.invoke(cli, ["test/test_data/r_notebooks/valid_r_notebook.ipynb"])
+
+    assert result.exit_code == 0
+    assert "was run correctly" in result.output
+
+
+def test_cli_invalid_r_notebook():
+    """E2E test: CLI returns 1 for an invalid R notebook."""
+    runner = CliRunner()
+    result = runner.invoke(cli, ["test/test_data/r_notebooks/invalid_r_notebook.ipynb"])
+
+    assert result.exit_code == 1
+    # Exception details are in the exception attribute when not caught
+    assert result.exception is not None
+    assert "not run in order" in str(result.exception)
+
+
+def test_cli_valid_julia_notebook():
+    """E2E test: CLI returns 0 for a valid Julia notebook."""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli, ["test/test_data/julia_notebooks/valid_julia_notebook.ipynb"]
+    )
+
+    assert result.exit_code == 0
+    assert "was run correctly" in result.output
+
+
+def test_cli_invalid_julia_notebook():
+    """E2E test: CLI returns 1 for an invalid Julia notebook."""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli, ["test/test_data/julia_notebooks/invalid_julia_notebook.ipynb"]
+    )
+
+    assert result.exit_code == 1
+    # Exception details are in the exception attribute when not caught
+    assert result.exception is not None
+    assert "not run in order" in str(result.exception)
+
+
+def test_cli_r_notebooks_directory():
+    """E2E test: CLI processes directory with mixed valid/invalid R notebooks."""
+    runner = CliRunner()
+    result = runner.invoke(cli, ["test/test_data/r_notebooks"])
+
+    # Should fail because the directory contains an invalid notebook
+    assert result.exit_code == 1
+    assert result.exception is not None
+    assert "not run in order" in str(result.exception)
+
+
+def test_cli_julia_notebooks_directory():
+    """E2E test: CLI processes directory with mixed valid/invalid Julia notebooks."""
+    runner = CliRunner()
+    result = runner.invoke(cli, ["test/test_data/julia_notebooks"])
+
+    # Should fail because the directory contains an invalid notebook
+    assert result.exit_code == 1
+    assert result.exception is not None
+    assert "not run in order" in str(result.exception)
+
+
+def test_cli_multiple_language_notebooks():
+    """E2E test: CLI can process multiple notebooks of different languages in one call."""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "test/test_data/r_notebooks/valid_r_notebook.ipynb",
+            "test/test_data/julia_notebooks/valid_julia_notebook.ipynb",
+            "test/test_data/enforce_notebook_run_order_valid/valid_notebook.ipynb",
+        ],
+    )
+
+    assert result.exit_code == 0
+    # Should see success messages for all three notebooks
+    assert result.output.count("was run correctly") == 3
