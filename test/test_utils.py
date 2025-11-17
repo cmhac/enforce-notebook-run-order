@@ -8,7 +8,7 @@ from enforce_notebook_run_order import utils
 def test_load_notebook_data_valid_notebook():
     """Tests that load_notebook_data successfully loads a valid notebook file"""
     notebook_path = os.path.join(
-        "test", "test_data", "enforce_notebook_run_order_valid", "valid_notebook.ipynb"
+        "test", "test_data", "notebooks", "python", "valid", "valid_notebook.ipynb"
     )
     notebook_data = utils.load_notebook_data(notebook_path)
 

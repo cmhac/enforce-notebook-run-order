@@ -53,26 +53,27 @@ def test_process_path_directory_with_notebooks(mocker):
     )
 
     test_data_dir = os.path.join(
-        "test", "test_data", "enforce_notebook_run_order_valid"
+        "test", "test_data", "notebooks", "nested_subdirectory_structure"
     )
 
     enforce_notebook_run_order.process_path(test_data_dir)
 
-    # Should find 2 notebooks: one in the root and one in test_subdirectory
-    assert mock_check_single_notebook.call_count == 2
-    # Verify that both notebook paths were checked
+    # Should find 3 notebooks: 1 at level1/ and 2 at level1/level2/
+    assert mock_check_single_notebook.call_count == 3
+    # Verify that all three notebook paths were checked
     called_paths = [call[0][0] for call in mock_check_single_notebook.call_args_list]
-    assert any("valid_notebook.ipynb" in path for path in called_paths)
-    assert any("valid_subdirectory_notebook.ipynb" in path for path in called_paths)
+    assert any("valid_level1_notebook.ipynb" in path for path in called_paths)
+    assert any("valid_nested_notebook.ipynb" in path for path in called_paths)
+    assert any("invalid_nested_notebook.ipynb" in path for path in called_paths)
 
 
 def test_process_path_directory_raises_error_when_notebooks_invalid():
     """
     Tests that check_notebook_run_order raises InvalidNotebookRunError
-    for each notebook in a given folder.
+    for notebooks in nested subdirectories.
     """
     test_data_dir = os.path.join(
-        "test", "test_data", "enforce_notebook_run_order_invalid"
+        "test", "test_data", "notebooks", "nested_subdirectory_structure"
     )
 
     with pytest.raises(enforce_notebook_run_order.InvalidNotebookRunError):
@@ -92,7 +93,7 @@ def test_process_path_single_notebook_file(mocker):
     )
 
     notebook_path = os.path.join(
-        "test", "test_data", "enforce_notebook_run_order_valid", "valid_notebook.ipynb"
+        "test", "test_data", "notebooks", "python", "valid", "valid_notebook.ipynb"
     )
 
     enforce_notebook_run_order.process_path(notebook_path)
