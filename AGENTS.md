@@ -4,6 +4,8 @@
 
 `enforce-notebook-run-order` is a Python tool that validates Jupyter notebooks were executed sequentially from top to bottom. It prevents notebooks from being committed in a state where cells were run out of order, ensuring reproducibility for collaborators.
 
+The tool works with **all Jupyter notebook kernels** including Python, R, Julia, and others - it's completely language-agnostic and only inspects the notebook's execution order metadata.
+
 The tool can be used as a standalone CLI (`nbcheck`) or as a pre-commit hook.
 
 ## Setup Commands

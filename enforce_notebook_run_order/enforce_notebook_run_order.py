@@ -1,7 +1,12 @@
 """Validates notebooks were executed sequentially.
 
 The tool inspects existing ``execution_count`` values of non-empty code cells and
-raises an error if counts are missing or not strictly increasing by one.
+raises an error if:
+- Any code cell was not executed (execution_count is None)
+- The first non-empty code cell does not start from execution_count=1
+- Execution counts are not strictly sequential (must increase by exactly 1)
+- There are gaps in the execution sequence (e.g., 1, 2, 4 with 3 missing)
+
 It does not execute notebooks or inspect outputs.
 """
 
@@ -23,15 +28,20 @@ class InvalidNotebookRunError(Exception):
 
 
 def check_notebook_run_order(notebook_data: Dict) -> None:
-    """
-    Checks that the notebook cells were run sequentially and fails if not.
+    """Checks that the notebook cells were run sequentially and fails if not.
+
+    Enforces that all non-empty code cells must have been executed (execution_count
+    is not None), execution must start from 1 (first non-empty code cell must have
+    execution_count=1), and execution must be strictly sequential without gaps
+    (1, 2, 3, ... with no skipped numbers).
 
     Args:
         notebook_data: Notebook data in dictionary format.
 
     Raises:
         NotebookCodeCellNotRunError: If a code cell in the notebook was not run.
-        NotebookRunOrderError: If the cells in the notebook were not run sequentially.
+        NotebookRunOrderError: If the cells in the notebook were not run sequentially,
+        including if they don't start from 1 or have gaps in the sequence.
     """
     previous_cell_number = 0
     code_cells = utils.get_code_cells(notebook_data)

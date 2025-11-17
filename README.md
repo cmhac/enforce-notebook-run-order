@@ -20,35 +20,91 @@
 
 Enforce the run order of Jupyter notebooks.
 
-Jupyter notebooks are great for interactive data analysis. However, when
-they can encourage a bad habit: running cells out of order. This can
-lead to notebooks being committed to the repository in a state where
-they don\'t run from top to bottom, and other collaborators may receive
-different results when running the notebook from top to bottom.
+Jupyter notebooks are great for interactive data analysis. However, they
+can encourage a bad habit: running cells out of order. This can lead to
+notebooks being committed to the repository in a state where they don\'t
+run from top to bottom, and other collaborators may receive different
+results when trying to reproduce the analysis.
 
-`enforce-notebook-run-order` enforces the run order of a notebook by
-raising an exception if any cells are run out of order.
+`enforce-notebook-run-order` attempts to fix this by raising an
+exception before each commit if any cells are run out of order.
 
-## Installation
+## Language Support
 
-`enforce-notebook-run-order` can be installed via pip:
+This tool works with **all Jupyter notebook kernels**, including:
+
+- **Python** (IPython)
+- **R** (IRkernel)
+- **Julia**
+- **Scala**, **Java**, **C++**, and many others
+
+Any language kernel that produces standard `.ipynb` files with
+`execution_count` metadata is supported. The tool is language-agnostic
+and only inspects the notebook\'s execution order metadata.
+
+## Validation Requirements
+
+For a notebook to be considered valid, it must meet the following
+requirements:
+
+- **All non-empty code cells must be executed**: Each code cell with
+  content must have an `execution_count` value (not `None`).
+- **Execution must start from 1**: The first non-empty code cell must
+  have `execution_count=1`.
+- **No gaps in execution sequence**: Execution counts must be strictly
+  sequential (1, 2, 3, \...) with no skipped numbers.
+
+**Examples:**
+
+- ✅ **Valid**: Cells with execution counts `1, 2, 3, 4`
+- ❌ **Invalid**: Cells starting with `0, 1, 2` (must start from 1)
+- ❌ **Invalid**: Cells starting with `2, 3, 4` (must start from 1)
+- ❌ **Invalid**: Cells with `1, 2, 4, 5` (gap at 3)
+- ❌ **Invalid**: Cells with `1, 3, 2` (not sequential)
+- ❌ **Invalid**: Cells with `1, 2, None` (unexecuted cell)
+
+**Note**: Empty code cells (cells with no content) are ignored and do
+not need to be executed.
+
+## Usage
+
+`enforce-notebook-run-order` is designed to work primarily as a
+[pre-commit hook](https://pre-commit.com/), but can also be used as a
+standalone script when needed.
+
+### pre-commit hook (Recommended)
+
+The intended way to use `enforce-notebook-run-order` is as a pre-commit
+hook to automatically validate notebook execution order before each
+commit.
+
+To set it up, add the following to your `.pre-commit-config.yaml`:
+
+``` yaml
+repos:
+-   repo: https://github.com/cmhac/enforce-notebook-run-order
+    rev: <replace with latest version from https://github.com/cmhac/enforce-notebook-run-order/releases/>
+    hooks:
+    -   id: enforce-notebook-run-order
+```
+
+This will automatically check all notebooks in your repository before
+each commit, preventing out-of-order execution from being committed to
+your repository.
+
+### Standalone
+
+For manual validation or CI integration, `enforce-notebook-run-order`
+can be used as a standalone script.
+
+First, install it the same way you install other Python packages, such
+as:
 
 ``` bash
 pip install enforce-notebook-run-order
 ```
 
-It can also be set up as a [pre-commit hook](https://pre-commit.com/).
-See the [pre-commit hook](#pre-commit-hook) section for more details.
-
-## Usage
-
-`enforce-notebook-run-order` can be used as a standalone script, or as a
-[pre-commit hook](https://pre-commit.com/).
-
-### Standalone
-
-To use `enforce-notebook-run-order` as a standalone script, simply run
-it with the path to the notebook(s) you want to check:
+Run it with the path to the notebook(s) you want to check:
 
 ``` bash
 nbcheck my_notebook.ipynb my_other_notebook.ipynb
@@ -65,39 +121,3 @@ current directory.
 
 You can also use the full `enforce-notebook-run-order` command, but the
 `nbcheck` command is provided as a convenience.
-
-### pre-commit hook
-
-To use `enforce_notebook_run_order` as a pre-commit hook, add the
-following to your `.pre-commit-config.yaml`:
-
-``` yaml
-repos:
--   repo: https://github.com/christopher-hacker/enforce-notebook-run-order
-    rev: 2.0.3
-    hooks:
-    -   id: enforce-notebook-run-order
-```
-
-### Limitations
-
-`enforce-notebook-run-order` now focuses solely on verifying that
-non-empty code cells were executed sequentially according to their
-`execution_count` values.
-
-- Does not execute notebooks; it only inspects existing metadata.
-- Ignores markdown and raw cells.
-- Empty code cells are ignored.
-- A non-empty code cell with `execution_count` set to `None` fails the
-  check.
-- Does not validate or compare cell outputs.
-- Manual editing of `execution_count` values can circumvent checks.
-
-### Exit Codes
-
-- Exit code `0`: All notebooks passed run-order validation.
-- Exit code `1`: At least one notebook failed; execution stops at first
-  failure.
-
-Use these exit codes in CI to enforce reproducible, sequentially
-executed notebooks.

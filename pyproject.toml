@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "enforce-notebook-run-order"
-version = "2.0.3"
+version = "2.0.4"
 description = "Don't let notebook cells run out of order"
 authors = ["Chris Hacker <c.m.hacker1997@gmail.com>"]
 license = "MIT"
@@ -26,6 +26,7 @@ Sphinx = "^7.4.7"
 sphinx-click = "^6.0.0"
 recommonmark = "^0.7.1"
 pydata-sphinx-theme = "^0.15.4"
+nbqa = "^1.9.1"
 
 [build-system]
 requires = ["poetry-core"]

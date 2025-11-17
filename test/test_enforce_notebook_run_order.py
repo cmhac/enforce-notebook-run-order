@@ -4,56 +4,6 @@ import os
 import pytest
 from enforce_notebook_run_order import enforce_notebook_run_order
 
-# pylint: disable=redefined-outer-name
-
-
-@pytest.fixture
-def valid_notebook_data():
-    """Returns valid test notebook json."""
-    return {
-        "cells": [
-            {"cell_type": "code", "execution_count": 1, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": 2, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": 3, "source": ["print('foo')"]},
-        ]
-    }
-
-
-@pytest.fixture
-def out_of_order_notebook_data():
-    """Returns invalid test notebook json."""
-    return {
-        "cells": [
-            {"cell_type": "code", "execution_count": 1, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": 3, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": 2, "source": ["print('foo')"]},
-        ]
-    }
-
-
-@pytest.fixture
-def notebook_cell_not_run_data():
-    """Returns invalid test notebook json."""
-    return {
-        "cells": [
-            {"cell_type": "code", "execution_count": 1, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": 2, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": None, "source": ["print('foo')"]},
-        ]
-    }
-
-
-@pytest.fixture
-def empty_notebook_cells():
-    """Returns empty notebook cells."""
-    return {
-        "cells": [
-            {"cell_type": "code", "execution_count": 1, "source": []},
-            {"cell_type": "code", "execution_count": None, "source": []},
-            {"cell_type": "code", "execution_count": None, "source": []},
-        ]
-    }
-
 
 def test_check_notebook_run_order_valid(valid_notebook_data):
     """Tests that valid notebook data does not raise an error."""
@@ -103,26 +53,27 @@ def test_process_path_directory_with_notebooks(mocker):
     )
 
     test_data_dir = os.path.join(
-        "test", "test_data", "enforce_notebook_run_order_valid"
+        "test", "test_data", "notebooks", "nested_subdirectory_structure"
     )
 
     enforce_notebook_run_order.process_path(test_data_dir)
 
-    # Should find 2 notebooks: one in the root and one in test_subdirectory
-    assert mock_check_single_notebook.call_count == 2
-    # Verify that both notebook paths were checked
+    # Should find 3 notebooks: 1 at level1/ and 2 at level1/level2/
+    assert mock_check_single_notebook.call_count == 3
+    # Verify that all three notebook paths were checked
     called_paths = [call[0][0] for call in mock_check_single_notebook.call_args_list]
-    assert any("valid_notebook.ipynb" in path for path in called_paths)
-    assert any("valid_subdirectory_notebook.ipynb" in path for path in called_paths)
+    assert any("valid_level1_notebook.ipynb" in path for path in called_paths)
+    assert any("valid_nested_notebook.ipynb" in path for path in called_paths)
+    assert any("invalid_nested_notebook.ipynb" in path for path in called_paths)
 
 
 def test_process_path_directory_raises_error_when_notebooks_invalid():
     """
     Tests that check_notebook_run_order raises InvalidNotebookRunError
-    for each notebook in a given folder.
+    for notebooks in nested subdirectories.
     """
     test_data_dir = os.path.join(
-        "test", "test_data", "enforce_notebook_run_order_invalid"
+        "test", "test_data", "notebooks", "nested_subdirectory_structure"
     )
 
     with pytest.raises(enforce_notebook_run_order.InvalidNotebookRunError):
@@ -142,9 +93,42 @@ def test_process_path_single_notebook_file(mocker):
     )
 
     notebook_path = os.path.join(
-        "test", "test_data", "enforce_notebook_run_order_valid", "valid_notebook.ipynb"
+        "test", "test_data", "notebooks", "python", "valid", "valid_notebook.ipynb"
     )
 
     enforce_notebook_run_order.process_path(notebook_path)
 
     mock_check_single_notebook.assert_called_once_with(notebook_path)
+
+
+def test_check_notebook_run_order_starts_from_zero(notebook_data_starts_from_zero):
+    """Tests that a notebook starting from execution_count 0 raises an error."""
+    with pytest.raises(enforce_notebook_run_order.NotebookRunOrderError) as error:
+        enforce_notebook_run_order.check_notebook_run_order(
+            notebook_data_starts_from_zero
+        )
+
+    assert "Cells were not run sequentially" in str(error.value)
+    assert "The cell that caused this error is #0" in str(error.value)
+
+
+def test_check_notebook_run_order_starts_from_two(notebook_data_starts_from_two):
+    """Tests that a notebook starting from execution_count 2 raises an error."""
+    with pytest.raises(enforce_notebook_run_order.NotebookRunOrderError) as error:
+        enforce_notebook_run_order.check_notebook_run_order(
+            notebook_data_starts_from_two
+        )
+
+    assert "Cells were not run sequentially" in str(error.value)
+    assert "The cell that caused this error is #2" in str(error.value)
+    assert "the previous cell was #0" in str(error.value)
+
+
+def test_check_notebook_run_order_with_gap(notebook_data_with_gap):
+    """Tests that a notebook with a gap in execution sequence raises an error."""
+    with pytest.raises(enforce_notebook_run_order.NotebookRunOrderError) as error:
+        enforce_notebook_run_order.check_notebook_run_order(notebook_data_with_gap)
+
+    assert "Cells were not run sequentially" in str(error.value)
+    assert "The cell that caused this error is #4" in str(error.value)
+    assert "the previous cell was #2" in str(error.value)
