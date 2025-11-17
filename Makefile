@@ -3,7 +3,7 @@ all: README.md
 .PHONY: all setup test docs
 
 README.md: \
-		GITHUB_README.rst \
+		docs/GITHUB_README.rst \
 		$(wildcard docs/*.rst)
 	pandoc $< -o $@
 

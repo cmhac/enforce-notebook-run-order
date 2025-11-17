@@ -18,4 +18,4 @@
      </a>
    </p>
 
-.. include:: docs/README.rst
+.. include:: README.rst
