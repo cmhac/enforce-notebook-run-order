@@ -8,9 +8,6 @@
   <a href="https://github.com/christopher-hacker/enforce-notebook-run-order/actions/workflows/test.yaml">
     <img src="https://github.com/christopher-hacker/enforce-notebook-run-order/actions/workflows/test.yaml/badge.svg" alt="Run tests">
   </a>
-  <a href="https://github.com/christopher-hacker/enforce-notebook-run-order/actions/workflows/auto-tag.yml">
-    <img src="https://github.com/christopher-hacker/enforce-notebook-run-order/actions/workflows/auto-tag.yml/badge.svg" alt="Create a tag if version changed">
-  </a>
   <a href="https://github.com/christopher-hacker/enforce-notebook-run-order/actions/workflows/publish-pypi.yaml">
     <img src="https://github.com/christopher-hacker/enforce-notebook-run-order/actions/workflows/publish-pypi.yaml/badge.svg" alt="Publish to PyPi">
   </a>
@@ -19,8 +16,7 @@
   </a>
 </p>
 
-enforce-notebook-run-order
-==========================
+# enforce-notebook-run-order
 
 Enforce the run order of Jupyter notebooks.
 
@@ -33,20 +29,18 @@ different results when running the notebook from top to bottom.
 `enforce-notebook-run-order` enforces the run order of a notebook by
 raising an exception if any cells are run out of order.
 
-Installation
-------------
+## Installation
 
 `enforce-notebook-run-order` can be installed via pip:
 
-``` {.sourceCode .bash}
+``` bash
 pip install enforce-notebook-run-order
 ```
 
 It can also be set up as a [pre-commit hook](https://pre-commit.com/).
 See the [pre-commit hook](#pre-commit-hook) section for more details.
 
-Usage
------
+## Usage
 
 `enforce-notebook-run-order` can be used as a standalone script, or as a
 [pre-commit hook](https://pre-commit.com/).
@@ -56,13 +50,13 @@ Usage
 To use `enforce-notebook-run-order` as a standalone script, simply run
 it with the path to the notebook(s) you want to check:
 
-``` {.sourceCode .bash}
+``` bash
 nbcheck my_notebook.ipynb my_other_notebook.ipynb
 ```
 
 Or point it to a directory to check all notebooks in that directory:
 
-``` {.sourceCode .bash}
+``` bash
 nbcheck my_notebooks/
 ```
 
@@ -77,10 +71,33 @@ You can also use the full `enforce-notebook-run-order` command, but the
 To use `enforce_notebook_run_order` as a pre-commit hook, add the
 following to your `.pre-commit-config.yaml`:
 
-``` {.sourceCode .yaml}
+``` yaml
 repos:
 -   repo: https://github.com/christopher-hacker/enforce-notebook-run-order
-    rev: 2.0.1
+    rev: 2.0.3
     hooks:
     -   id: enforce-notebook-run-order
 ```
+
+### Limitations
+
+`enforce-notebook-run-order` now focuses solely on verifying that
+non-empty code cells were executed sequentially according to their
+`execution_count` values.
+
+- Does not execute notebooks; it only inspects existing metadata.
+- Ignores markdown and raw cells.
+- Empty code cells are ignored.
+- A non-empty code cell with `execution_count` set to `None` fails the
+  check.
+- Does not validate or compare cell outputs.
+- Manual editing of `execution_count` values can circumvent checks.
+
+### Exit Codes
+
+- Exit code `0`: All notebooks passed run-order validation.
+- Exit code `1`: At least one notebook failed; execution stops at first
+  failure.
+
+Use these exit codes in CI to enforce reproducible, sequentially
+executed notebooks.

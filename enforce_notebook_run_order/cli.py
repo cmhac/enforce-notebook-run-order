@@ -1,4 +1,8 @@
-"""Command-line interface for enforce_notebook_run_order"""
+"""Command-line interface for enforce_notebook_run_order.
+
+Checks run order of notebooks by inspecting existing execution counts.
+Does not execute notebooks or validate outputs.
+"""
 
 from typing import Tuple
 import click
@@ -10,11 +14,11 @@ from .enforce_notebook_run_order import process_path
 def cli(paths: Tuple[str, ...] = None):
     """
     Checks the run order of notebooks in the specified paths,
-    or the entire repo if no paths are specified
+    or recursively in the current directory if no paths are specified.
 
     Args:
-        paths: The paths to check. If no paths are specified, the current directory is checked.
-        no_run: If True, the notebooks will not be run. This may miss some errors, but is useful
+        paths: Zero or more paths to notebook files or directories.
+            Directories are traversed recursively. If omitted, ``.`` is used.
     """
     if paths:
         for path in paths:

@@ -50,26 +50,32 @@ def parse_cell_comment(cell: Dict) -> Optional[str]:
 
 
 def cell_has_no_run_comment(cell_data: Dict) -> bool:
-    """Returns True if the cell has a no-run comment
+    """(Deprecated) Returns True if the cell has a ``# no-run`` comment.
+
+    This marker is no longer acted upon by the tool and is retained only
+    for backward compatibility and test coverage.
 
     Args:
-        cell_data: The cell to check
+        cell_data: The cell to check.
 
     Returns:
-        bool: True if the cell has a no-run comment
+        bool: True if the first line is ``# no-run``.
     """
     comment = parse_cell_comment(cell_data)
     return comment is not None and comment.lower() == "no-run"
 
 
 def cell_has_no_check_output_comment(cell_data: Dict) -> bool:
-    """Returns True if the cell has a no-check-output comment
+    """(Deprecated) Returns True if the cell has a ``# no-check-output`` comment.
+
+    The tool no longer performs output comparisons; this marker is retained
+    only for backward compatibility and test coverage.
 
     Args:
-        cell_data: The cell to check
+        cell_data: The cell to check.
 
     Returns:
-        bool: True if the cell has a no-check-output comment
+        bool: True if the first line is ``# no-check-output``.
     """
     comment = parse_cell_comment(cell_data)
     return comment is not None and comment.lower() == "no-check-output"
