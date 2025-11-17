@@ -1,4 +1,9 @@
-"""Forces notebooks to run cells sequentially and fails if cells were run out of order"""
+"""Validates notebooks were executed sequentially.
+
+The tool inspects existing ``execution_count`` values of non-empty code cells and
+raises an error if counts are missing or not strictly increasing by one.
+It does not execute notebooks or inspect outputs.
+"""
 
 import os
 from typing import Dict
@@ -51,12 +56,10 @@ def check_notebook_run_order(notebook_data: Dict) -> None:
 
 
 def check_single_notebook(notebook_path: str) -> None:
-    """
-    Check a single notebook
+    """Check a single notebook for sequential execution.
 
     Args:
         notebook_path: Path to the notebook file.
-        no_run: If True, do not run the notebook. Defaults to False.
 
     Raises:
         InvalidNotebookRunError: If any problems were identified with the notebook's run order.
@@ -75,15 +78,13 @@ def check_single_notebook(notebook_path: str) -> None:
 
 
 def process_path(path: str) -> None:
-    """
-    Processes a single path. Raises an exception if the path is invalid
+    """Process a path to a notebook file or directory recursively.
 
     Args:
-        path: Path to the notebook file or directory.
-        no_run: If True, do not run the notebook. Defaults to False.
+        path: Path to a single ``.ipynb`` file or a directory containing notebooks.
 
     Raises:
-        ValueError: If the path is invalid.
+        ValueError: If the path is neither a directory nor a ``.ipynb`` file.
     """
     if os.path.isdir(path):
         # Get all .ipynb files in the directory and its subdirectories

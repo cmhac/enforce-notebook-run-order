@@ -59,37 +59,27 @@ To use ``enforce_notebook_run_order`` as a pre-commit hook, add the following to
 
     repos:
     -   repo: https://github.com/christopher-hacker/enforce-notebook-run-order
-        rev: 1.4.1
+        rev: 2.0.3
         hooks:
         -   id: enforce-notebook-run-order
 
-disabling output checks
-^^^^^^^^^^^^^^^^^^^^^^^
+Limitations
+^^^^^^^^^^^
 
-By default, ``enforce-notebook-run-order`` will check that the output of each cell matches the
-output of the previous run. This will catch cases where a cell is run out of order, but the
-execution count is still sequential. However, this can be problematic if the output of a cell
-changes between runs, such as when using random numbers. It can also be problematic if the
-notebook runs for a long time.
+``enforce-notebook-run-order`` now focuses solely on verifying that non-empty code cells were
+executed sequentially according to their ``execution_count`` values.
 
-There are three ways to disable output checks:
+* Does not execute notebooks; it only inspects existing metadata.
+* Ignores markdown and raw cells.
+* Empty code cells are ignored.
+* A non-empty code cell with ``execution_count`` set to ``None`` fails the check.
+* Does not validate or compare cell outputs.
+* Manual editing of ``execution_count`` values can circumvent checks.
 
-1. Disabling running all notebooks using the ``--no-run`` flag:
+Exit Codes
+^^^^^^^^^^
 
-   .. code-block:: bash
+* Exit code ``0``: All notebooks passed run-order validation.
+* Exit code ``1``: At least one notebook failed; execution stops at first failure.
 
-       nbcheck --no-run my_notebook.ipynb
-
-2. Disabling running a single notebook using the ``no-run`` marker **in the first cell of the notebook**:
-
-    .. code-block:: python
-    
-         # no-run
-         print("This notebook will not be run")
-
-3. Disabling output checks for a single cell using the ``no-check-output`` marker:
-
-    .. code-block:: python
-    
-         # no-check-output
-         print("This cell will be run, but its output will not be checked")
+Use these exit codes in CI to enforce reproducible, sequentially executed notebooks.
