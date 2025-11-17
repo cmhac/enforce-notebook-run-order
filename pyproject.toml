@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "enforce-notebook-run-order"
-version = "2.1.0"
+version = "2.1.1"
 description = "Don't let notebook cells run out of order"
 authors = ["Chris Hacker <c.m.hacker1997@gmail.com>"]
 license = "MIT"
