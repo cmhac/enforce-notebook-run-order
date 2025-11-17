@@ -135,6 +135,40 @@ def test_cli_no_args_exits_with_error_on_invalid_notebook():
 # E2E tests for multi-language notebook support
 
 
+def test_cli_valid_python_notebook():
+    """E2E test: CLI returns 0 for a valid Python notebook."""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli, ["test/test_data/notebooks/python/valid/valid_notebook.ipynb"]
+    )
+
+    assert result.exit_code == 0
+    assert "VALID" in result.output
+
+
+def test_cli_invalid_python_notebook():
+    """E2E test: CLI returns 1 for an invalid Python notebook."""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli, ["test/test_data/notebooks/python/invalid/invalid_notebook.ipynb"]
+    )
+
+    assert result.exit_code == 1
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
+
+
+def test_cli_python_notebooks_directory():
+    """E2E test: CLI processes directory with mixed valid/invalid Python notebooks."""
+    runner = CliRunner()
+    result = runner.invoke(cli, ["test/test_data/notebooks/python"])
+
+    # Should fail because the directory contains an invalid notebook
+    assert result.exit_code == 1
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
+
+
 def test_cli_valid_r_notebook():
     """E2E test: CLI returns 0 for a valid R notebook."""
     runner = CliRunner()
@@ -143,7 +177,7 @@ def test_cli_valid_r_notebook():
     )
 
     assert result.exit_code == 0
-    assert "was run correctly" in result.output
+    assert "VALID" in result.output
 
 
 def test_cli_invalid_r_notebook():
@@ -154,9 +188,8 @@ def test_cli_invalid_r_notebook():
     )
 
     assert result.exit_code == 1
-    # Exception details are in the exception attribute when not caught
-    assert result.exception is not None
-    assert "not run in order" in str(result.exception)
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
 
 
 def test_cli_valid_julia_notebook():
@@ -167,7 +200,7 @@ def test_cli_valid_julia_notebook():
     )
 
     assert result.exit_code == 0
-    assert "was run correctly" in result.output
+    assert "VALID" in result.output
 
 
 def test_cli_invalid_julia_notebook():
@@ -178,9 +211,8 @@ def test_cli_invalid_julia_notebook():
     )
 
     assert result.exit_code == 1
-    # Exception details are in the exception attribute when not caught
-    assert result.exception is not None
-    assert "not run in order" in str(result.exception)
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
 
 
 def test_cli_r_notebooks_directory():
@@ -190,8 +222,8 @@ def test_cli_r_notebooks_directory():
 
     # Should fail because the directory contains an invalid notebook
     assert result.exit_code == 1
-    assert result.exception is not None
-    assert "not run in order" in str(result.exception)
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
 
 
 def test_cli_julia_notebooks_directory():
@@ -201,8 +233,8 @@ def test_cli_julia_notebooks_directory():
 
     # Should fail because the directory contains an invalid notebook
     assert result.exit_code == 1
-    assert result.exception is not None
-    assert "not run in order" in str(result.exception)
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
 
 
 def test_cli_multiple_language_notebooks():
@@ -219,4 +251,4 @@ def test_cli_multiple_language_notebooks():
 
     assert result.exit_code == 0
     # Should see success messages for all three notebooks
-    assert result.output.count("was run correctly") == 3
+    assert result.output.count("VALID") == 3

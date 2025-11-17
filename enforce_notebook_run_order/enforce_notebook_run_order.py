@@ -12,7 +12,10 @@ It does not execute notebooks or inspect outputs.
 
 import os
 from typing import Dict
+from rich.console import Console
 from . import utils
+
+console = Console()
 
 
 class NotebookCodeCellNotRunError(Exception):
@@ -36,13 +39,18 @@ def check_notebook_run_order(notebook_data: Dict) -> None:
     (1, 2, 3, ... with no skipped numbers).
 
     Args:
-        notebook_data: Notebook data in dictionary format.
+        notebook_data (Dict): Notebook data in dictionary format.
 
     Raises:
         NotebookCodeCellNotRunError: If a code cell in the notebook was not run.
         NotebookRunOrderError: If the cells in the notebook were not run sequentially,
-        including if they don't start from 1 or have gaps in the sequence.
+            including if they don't start from 1 or have gaps in the sequence.
     """
+
+    help_msg = (
+        "To fix this, restart the notebook kernel and run all cells sequentially."
+    )
+
     previous_cell_number = 0
     code_cells = utils.get_code_cells(notebook_data)
     for cell in code_cells:
@@ -52,15 +60,14 @@ def check_notebook_run_order(notebook_data: Dict) -> None:
         if len(current_cell_source) > 0:
             if current_cell_number is None:
                 raise NotebookCodeCellNotRunError(
-                    f"Code cell was not run. The previous cell was #{previous_cell_number}. \n\n"
-                    f"Cell contents: \n\n> {cell}"
+                    f"Code cell was not run. The previous cell was #{previous_cell_number}.\n\n"
+                    + help_msg
                 )
             if current_cell_number != previous_cell_number + 1:
                 raise NotebookRunOrderError(
                     "Cells were not run sequentially. "
                     f"The cell that caused this error is #{current_cell_number} "
-                    f"and the previous cell was #{previous_cell_number}. \n\n"
-                    f"Cell contents: \n\n> {cell}"
+                    f"and the previous cell was #{previous_cell_number}.\n\n" + help_msg
                 )
         previous_cell_number = current_cell_number
 
@@ -69,7 +76,7 @@ def check_single_notebook(notebook_path: str) -> None:
     """Check a single notebook for sequential execution.
 
     Args:
-        notebook_path: Path to the notebook file.
+        notebook_path (str): Path to the notebook file.
 
     Raises:
         InvalidNotebookRunError: If any problems were identified with the notebook's run order.
@@ -81,17 +88,21 @@ def check_single_notebook(notebook_path: str) -> None:
         NotebookCodeCellNotRunError,
         NotebookRunOrderError,
     ) as error:
+        # Print error with styling
+        console.print(f"\n❌ [bold red]INVALID:[/bold red] {notebook_path}")
+        console.print(f"[yellow]Error:[/yellow] {error}\n", style="dim")
         raise InvalidNotebookRunError(
             f"Notebook {notebook_path} was not run in order.\n\n{error}\n\n"
         ) from error
-    print(f"Notebook {notebook_path} was run correctly.")
+    # Print success with styling
+    console.print(f"✅ [bold green]VALID:[/bold green] {notebook_path}")
 
 
 def process_path(path: str) -> None:
     """Process a path to a notebook file or directory recursively.
 
     Args:
-        path: Path to a single ``.ipynb`` file or a directory containing notebooks.
+        path (str): Path to a single ``.ipynb`` file or a directory containing notebooks.
 
     Raises:
         ValueError: If the path is neither a directory nor a ``.ipynb`` file.

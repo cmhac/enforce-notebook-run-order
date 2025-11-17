@@ -18,9 +18,8 @@ def test_check_notebook_run_order_out_of_order(out_of_order_notebook_data):
     expected_error_message = (
         "Cells were not run sequentially. "
         "The cell that caused this error is #3 "
-        "and the previous cell was #1. \n\n"
-        "Cell contents: \n\n> {'cell_type': 'code', 'execution_count': 3, "
-        "'source': [\"print('foo')\"]}"
+        "and the previous cell was #1.\n\n"
+        "To fix this, restart the notebook kernel and run all cells sequentially."
     )
     assert str(error.value) == expected_error_message
 
@@ -31,9 +30,8 @@ def test_check_notebook_run_order_cell_not_run(notebook_cell_not_run_data):
         enforce_notebook_run_order.check_notebook_run_order(notebook_cell_not_run_data)
 
     expected_error_message = (
-        "Code cell was not run. The previous cell was #2. \n\n"
-        "Cell contents: \n\n> {'cell_type': 'code', 'execution_count': None, "
-        "'source': [\"print('foo')\"]}"
+        "Code cell was not run. The previous cell was #2.\n\n"
+        "To fix this, restart the notebook kernel and run all cells sequentially."
     )
     assert str(error.value) == expected_error_message
 
