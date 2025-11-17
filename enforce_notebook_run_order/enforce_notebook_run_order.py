@@ -12,7 +12,10 @@ It does not execute notebooks or inspect outputs.
 
 import os
 from typing import Dict
+from rich.console import Console
 from . import utils
+
+console = Console()
 
 
 class NotebookCodeCellNotRunError(Exception):
@@ -81,10 +84,14 @@ def check_single_notebook(notebook_path: str) -> None:
         NotebookCodeCellNotRunError,
         NotebookRunOrderError,
     ) as error:
+        # Print error with styling
+        console.print(f"\n❌ [bold red]INVALID:[/bold red] {notebook_path}")
+        console.print(f"[yellow]Error:[/yellow] {error}\n", style="dim")
         raise InvalidNotebookRunError(
             f"Notebook {notebook_path} was not run in order.\n\n{error}\n\n"
         ) from error
-    print(f"Notebook {notebook_path} was run correctly.")
+    # Print success with styling
+    console.print(f"✅ [bold green]VALID:[/bold green] {notebook_path}")
 
 
 def process_path(path: str) -> None:

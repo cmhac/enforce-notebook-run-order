@@ -143,7 +143,7 @@ def test_cli_valid_r_notebook():
     )
 
     assert result.exit_code == 0
-    assert "was run correctly" in result.output
+    assert "VALID" in result.output
 
 
 def test_cli_invalid_r_notebook():
@@ -167,7 +167,7 @@ def test_cli_valid_julia_notebook():
     )
 
     assert result.exit_code == 0
-    assert "was run correctly" in result.output
+    assert "VALID" in result.output
 
 
 def test_cli_invalid_julia_notebook():
@@ -219,4 +219,4 @@ def test_cli_multiple_language_notebooks():
 
     assert result.exit_code == 0
     # Should see success messages for all three notebooks
-    assert result.output.count("was run correctly") == 3
+    assert result.output.count("VALID") == 3
