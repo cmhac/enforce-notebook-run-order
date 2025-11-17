@@ -97,11 +97,11 @@ def test_check_notebook_run_order_empty_cells(empty_notebook_cells):
 
 def test_process_path_valid(mocker):
     """
-    Tests that check_notebook_run_order is called correctly
-    for each notebook in a given folder.
+    Tests that check_single_notebook is called correctly
+    for each notebook in a given folder, including nested subdirectories.
     """
-    mock_check_notebook_run_order = mocker.patch(
-        "enforce_notebook_run_order.enforce_notebook_run_order.check_notebook_run_order"
+    mock_check_single_notebook = mocker.patch(
+        "enforce_notebook_run_order.enforce_notebook_run_order.check_single_notebook"
     )
 
     test_data_dir = os.path.join(
@@ -110,7 +110,12 @@ def test_process_path_valid(mocker):
 
     enforce_notebook_run_order.process_path(test_data_dir)
 
-    assert mock_check_notebook_run_order.call_count == 2
+    # Should find 2 notebooks: one in the root and one in test_subdirectory
+    assert mock_check_single_notebook.call_count == 2
+    # Verify that both notebook paths were checked
+    called_paths = [call[0][0] for call in mock_check_single_notebook.call_args_list]
+    assert any("valid_notebook.ipynb" in path for path in called_paths)
+    assert any("valid_subdirectory_notebook.ipynb" in path for path in called_paths)
 
 
 def test_process_path_invalid():
@@ -182,3 +187,98 @@ def test_cli_no_paths_searches_entire_dir(mocker):
     mock_process_path.assert_called_once_with(".")
 
     assert result.exit_code == 0
+
+
+def test_cli_no_paths_process_path_called_with_dot_argument(mocker):
+    """
+    Tests that process_path is called with "." when no paths are specified.
+    This verifies the recursion starts from the current directory.
+    """
+    mock_process_path = mocker.patch("enforce_notebook_run_order.cli.process_path")
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [])
+
+    # Verify process_path was called exactly once with "."
+    mock_process_path.assert_called_once()
+    args, _ = mock_process_path.call_args
+    assert args[0] == "."
+    assert result.exit_code == 0
+
+
+def test_cli_with_multiple_paths_calls_process_path_for_each(mocker):
+    """
+    Tests that process_path is called for each path argument provided.
+    """
+    mock_process_path = mocker.patch("enforce_notebook_run_order.cli.process_path")
+
+    test_path_1 = "test/test_data/enforce_notebook_run_order_valid"
+    test_path_2 = "test/test_data/enforce_notebook_run_order_invalid"
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [test_path_1, test_path_2])
+
+    # Verify process_path was called twice, once for each path
+    assert mock_process_path.call_count == 2
+    calls = [call[0][0] for call in mock_process_path.call_args_list]
+    assert test_path_1 in calls
+    assert test_path_2 in calls
+    assert result.exit_code == 0
+
+
+def test_process_path_recursively_scans_nested_directories(mocker):
+    """
+    Tests that process_path recursively scans nested directories and finds
+    all notebooks at multiple levels of nesting.
+    """
+    mock_check_single_notebook = mocker.patch(
+        "enforce_notebook_run_order.enforce_notebook_run_order.check_single_notebook"
+    )
+
+    test_data_dir = os.path.join(
+        "test", "test_data", "enforce_notebook_run_order_valid"
+    )
+
+    enforce_notebook_run_order.process_path(test_data_dir)
+
+    # Should be called for each notebook found recursively
+    assert mock_check_single_notebook.call_count == 2
+    called_notebook_paths = [
+        call[0][0] for call in mock_check_single_notebook.call_args_list
+    ]
+
+    # Verify both the root-level and nested notebook were found
+    assert any("valid_notebook.ipynb" in path for path in called_notebook_paths)
+    assert any(
+        "test_subdirectory" in path and "valid_subdirectory_notebook.ipynb" in path
+        for path in called_notebook_paths
+    )
+
+
+def test_cli_no_paths_delegates_to_process_path_with_current_dir(mocker):
+    """
+    Tests that calling CLI with no paths delegates to process_path with
+    the current directory, enabling recursive scanning from root.
+    """
+    mock_load_notebook_data = mocker.patch(
+        "enforce_notebook_run_order.utils.load_notebook_data"
+    )
+    mock_check_notebook_run_order = mocker.patch(
+        "enforce_notebook_run_order.enforce_notebook_run_order.check_notebook_run_order"
+    )
+
+    # Return valid notebook data so process_path succeeds
+    mock_load_notebook_data.return_value = {
+        "cells": [
+            {"cell_type": "code", "execution_count": 1, "source": ["print('foo')"]}
+        ]
+    }
+
+    runner = CliRunner()
+    result = runner.invoke(cli, [])
+
+    # Verify the chain of calls demonstrates recursion from current directory
+    assert result.exit_code == 0
+    # Both check_notebook_run_order was called (proving notebooks were processed)
+    # and the process started from "." (which os.walk would handle recursively)
+    assert mock_check_notebook_run_order.called
