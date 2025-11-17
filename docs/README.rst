@@ -72,8 +72,8 @@ To use ``enforce_notebook_run_order`` as a pre-commit hook, add the following to
 .. code-block:: yaml
 
     repos:
-    -   repo: https://github.com/christopher-hacker/enforce-notebook-run-order
-        rev: 2.0.3
+    -   repo: https://github.com/cmhac/enforce-notebook-run-order
+        rev: <replace with latest version from https://github.com/cmhac/enforce-notebook-run-order/releases/>
         hooks:
         -   id: enforce-notebook-run-order
 
