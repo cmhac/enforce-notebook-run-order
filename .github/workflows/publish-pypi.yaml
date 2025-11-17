@@ -9,24 +9,24 @@
 name: publish
 
 on:
-  push:
-    tags:
-      - "*"
-  workflow_dispatch:
-    inputs:
-      tag_name:
-        description: "Tag Name"
-        required: true
+  workflow_run:
+    workflows: ["auto-tag"]
+    branches: [main]
+    types:
+      - completed
 
 permissions:
   contents: write
 
 jobs:
   deploy:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Python 3.12
         uses: actions/setup-python@v3
         with:
@@ -42,11 +42,17 @@ jobs:
           poetry run pylint $(git ls-files '*.py')
       - name: Build package
         run: poetry build
-      - name: create release
+      - name: Determine latest tag
+        run: |
+          git fetch --prune --tags
+          TAG_NAME=$(git describe --tags --abbrev=0)
+          echo "Using tag $TAG_NAME"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+      - name: Create release
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/*"
-          tag: ${{ github.event.inputs.tag_name }}
+          tag: ${{ env.TAG_NAME }}
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:

@@ -2,7 +2,7 @@ name: docs
 
 on:
   workflow_run:
-    workflows: ["test"]
+    workflows: ["auto-tag"]
     branches: [main]
     types:
       - completed
@@ -12,9 +12,10 @@ permissions:
 
 jobs:
   docs:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python 3.12
         uses: actions/setup-python@v3
         with:

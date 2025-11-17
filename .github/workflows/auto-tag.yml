@@ -9,17 +9,17 @@
 name: auto-tag
 
 on:
-  workflow_run:
-    workflows: ["test"]
+  pull_request:
     branches: [main]
     types:
-      - completed
+      - closed
 
 permissions:
   contents: write
 
 jobs:
   auto-tag:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
