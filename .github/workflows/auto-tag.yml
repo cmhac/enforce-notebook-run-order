@@ -53,7 +53,7 @@ jobs:
             exit 0
           else
             git config user.name 'Christopher Hacker'
-            git config user.email 'christopher-hacker@users.noreply.github.com'
+            git config user.email 'cmhac@users.noreply.github.com'
             echo "Creating tag $NEW_VER..."
             git tag $NEW_VER
             git push origin $NEW_VER

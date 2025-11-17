@@ -11,3 +11,4 @@
 
    cli
    python_api
+   contributing
