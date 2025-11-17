@@ -1,0 +1,14 @@
+/* Fix overlap between site title and navigation menu */
+.navbar-brand.logo {
+    margin-right: 3rem !important;
+}
+
+.logo__title {
+    max-width: 350px;
+    word-break: break-word;
+}
+
+/* Add spacing to navbar items */
+.navbar-header-items__center {
+    margin-left: 2rem;
+}
