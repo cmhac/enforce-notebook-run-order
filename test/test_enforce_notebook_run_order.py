@@ -93,7 +93,7 @@ def test_check_notebook_run_order_empty_cells(empty_notebook_cells):
     enforce_notebook_run_order.check_notebook_run_order(empty_notebook_cells)
 
 
-def test_process_path_valid(mocker):
+def test_process_path_directory_with_notebooks(mocker):
     """
     Tests that check_single_notebook is called correctly
     for each notebook in a given folder, including nested subdirectories.
@@ -116,7 +116,7 @@ def test_process_path_valid(mocker):
     assert any("valid_subdirectory_notebook.ipynb" in path for path in called_paths)
 
 
-def test_process_path_invalid():
+def test_process_path_directory_raises_error_when_notebooks_invalid():
     """
     Tests that check_notebook_run_order raises InvalidNotebookRunError
     for each notebook in a given folder.
@@ -129,8 +129,8 @@ def test_process_path_invalid():
         enforce_notebook_run_order.process_path(test_data_dir)
 
 
-def test_process_path_invalid_notebook_path():
-    """Tests that the CLI raises an error when given a file that is not an ipynb."""
+def test_process_path_raises_error_for_non_ipynb_file():
+    """Tests that process_path raises an error when given a file that is not an ipynb."""
     with pytest.raises(ValueError):
         enforce_notebook_run_order.process_path("test/test_data/invalid_notebook.py")
 

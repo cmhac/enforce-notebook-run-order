@@ -6,7 +6,7 @@ from enforce_notebook_run_order.cli import cli
 # pylint: disable=redefined-outer-name
 
 
-def test_cli_valid_notebook_path_valid_notebook():
+def test_cli_path_valid_notebook():
     """Tests that the CLI returns 0 when given a valid notebook path."""
     runner = CliRunner()
     result = runner.invoke(
@@ -18,7 +18,7 @@ def test_cli_valid_notebook_path_valid_notebook():
     assert result.exit_code == 0
 
 
-def test_cli_valid_notebook_path_invalid_notebook():
+def test_cli_path_invalid_notebook():
     """Tests that the CLI returns 1 when given an invalid notebook path."""
     runner = CliRunner()
     result = runner.invoke(
@@ -31,8 +31,8 @@ def test_cli_valid_notebook_path_invalid_notebook():
     assert result.exit_code == 1
 
 
-def test_cli_valid_notebook_dir_valid_notebooks():
-    """Tests that the CLI returns 0 when given a valid notebook_dir."""
+def test_cli_directory_valid_notebooks():
+    """Tests that the CLI returns 0 when given a valid notebook directory."""
     runner = CliRunner()
     result = runner.invoke(
         cli,
@@ -43,7 +43,7 @@ def test_cli_valid_notebook_dir_valid_notebooks():
     assert result.exit_code == 0
 
 
-def test_cli_no_paths_searches_entire_dir(mocker):
+def test_cli_no_args_searches_current_directory(mocker):
     """
     Tests that the CLI searches the entire current directory if no paths are specified.
     """
@@ -58,7 +58,7 @@ def test_cli_no_paths_searches_entire_dir(mocker):
     assert result.exit_code == 0
 
 
-def test_cli_no_paths_process_path_called_with_dot_argument(mocker):
+def test_cli_no_args_delegates_to_process_path_with_dot(mocker):
     """
     Tests that process_path is called with "." when no paths are specified.
     This verifies the recursion starts from the current directory.
@@ -75,7 +75,7 @@ def test_cli_no_paths_process_path_called_with_dot_argument(mocker):
     assert result.exit_code == 0
 
 
-def test_cli_with_multiple_paths_calls_process_path_for_each(mocker):
+def test_cli_multiple_paths_delegates_to_process_path_for_each(mocker):
     """
     Tests that process_path is called for each path argument provided.
     """
@@ -95,7 +95,7 @@ def test_cli_with_multiple_paths_calls_process_path_for_each(mocker):
     assert result.exit_code == 0
 
 
-def test_cli_no_paths_delegates_to_process_path_with_current_dir(mocker):
+def test_cli_no_args_delegates_to_process_path_with_current_dir(mocker):
     """
     Tests that calling CLI with no paths delegates to process_path with
     the current directory, enabling recursive scanning from root.
@@ -124,7 +124,7 @@ def test_cli_no_paths_delegates_to_process_path_with_current_dir(mocker):
     assert mock_check_notebook_run_order.called
 
 
-def test_cli_no_paths_invalid_notebook_exits_with_error():
+def test_cli_no_args_exits_with_error_on_invalid_notebook():
     """Tests that CLI exits with a non-zero status when scanning '.' finds bad notebooks."""
     runner = CliRunner()
     result = runner.invoke(cli)

@@ -97,7 +97,7 @@ def test_parse_cell_comment(
     )
 
 
-def test_parse_cell_comment_no_comment(cell_json_without_comment):
+def test_parse_cell_comment_returns_none_when_no_comment(cell_json_without_comment):
     """tests that parse_cell_comment returns None if there is no comment"""
     assert utils.parse_cell_comment(cell_json_without_comment) is None
 
@@ -107,7 +107,9 @@ def test_cell_has_no_run_comment(cell_with_no_run_comment):
     assert utils.cell_has_no_run_comment(cell_with_no_run_comment)
 
 
-def test_cell_has_no_run_comment_no_comment(cell_json_without_comment):
+def test_cell_has_no_run_comment_returns_false_when_no_comment(
+    cell_json_without_comment,
+):
     """tests that cell_has_no_run_comment returns False if the cell has no comment"""
     assert not utils.cell_has_no_run_comment(cell_json_without_comment)
 
@@ -120,6 +122,8 @@ def test_cell_has_no_check_output_comment(cell_with_no_check_output_comment):
     assert utils.cell_has_no_check_output_comment(cell_with_no_check_output_comment)
 
 
-def test_cell_has_no_check_output_comment_no_comment(cell_json_without_comment):
+def test_cell_has_no_check_output_comment_returns_false_when_no_comment(
+    cell_json_without_comment,
+):
     """tests that cell_has_no_check_output_comment returns False if the cell has no comment"""
     assert not utils.cell_has_no_check_output_comment(cell_json_without_comment)
