@@ -9,11 +9,11 @@ README.md: \
 
 setup:
 	poetry install --with dev
-	pre-commit install
+	poetry run pre-commit install
 
 test:
 	poetry run pytest --cov test
 	poetry run coverage html
 
 docs:
-	$(MAKE) -C docs html
+	poetry run $(MAKE) -C docs html

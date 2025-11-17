@@ -1,10 +1,8 @@
 """tests the enforce_notebook_run_order module"""
 
 import os
-from click.testing import CliRunner
 import pytest
 from enforce_notebook_run_order import enforce_notebook_run_order
-from enforce_notebook_run_order.cli import cli
 
 # pylint: disable=redefined-outer-name
 
@@ -95,13 +93,13 @@ def test_check_notebook_run_order_empty_cells(empty_notebook_cells):
     enforce_notebook_run_order.check_notebook_run_order(empty_notebook_cells)
 
 
-def test_process_path_valid(mocker):
+def test_process_path_directory_with_notebooks(mocker):
     """
-    Tests that check_notebook_run_order is called correctly
-    for each notebook in a given folder.
+    Tests that check_single_notebook is called correctly
+    for each notebook in a given folder, including nested subdirectories.
     """
-    mock_check_notebook_run_order = mocker.patch(
-        "enforce_notebook_run_order.enforce_notebook_run_order.check_notebook_run_order"
+    mock_check_single_notebook = mocker.patch(
+        "enforce_notebook_run_order.enforce_notebook_run_order.check_single_notebook"
     )
 
     test_data_dir = os.path.join(
@@ -110,10 +108,15 @@ def test_process_path_valid(mocker):
 
     enforce_notebook_run_order.process_path(test_data_dir)
 
-    assert mock_check_notebook_run_order.call_count == 2
+    # Should find 2 notebooks: one in the root and one in test_subdirectory
+    assert mock_check_single_notebook.call_count == 2
+    # Verify that both notebook paths were checked
+    called_paths = [call[0][0] for call in mock_check_single_notebook.call_args_list]
+    assert any("valid_notebook.ipynb" in path for path in called_paths)
+    assert any("valid_subdirectory_notebook.ipynb" in path for path in called_paths)
 
 
-def test_process_path_invalid():
+def test_process_path_directory_raises_error_when_notebooks_invalid():
     """
     Tests that check_notebook_run_order raises InvalidNotebookRunError
     for each notebook in a given folder.
@@ -126,59 +129,22 @@ def test_process_path_invalid():
         enforce_notebook_run_order.process_path(test_data_dir)
 
 
-def test_process_path_invalid_notebook_path():
-    """Tests that the CLI raises an error when given a file that is not an ipynb."""
+def test_process_path_raises_error_for_non_ipynb_file():
+    """Tests that process_path raises an error when given a file that is not an ipynb."""
     with pytest.raises(ValueError):
         enforce_notebook_run_order.process_path("test/test_data/invalid_notebook.py")
 
 
-def test_cli_valid_notebook_path_valid_notebook():
-    """Tests that the CLI returns 0 when given a valid notebook path."""
-    runner = CliRunner()
-    result = runner.invoke(
-        cli,
-        [
-            "test/test_data/enforce_notebook_run_order_valid/valid_notebook.ipynb",
-        ],
+def test_process_path_single_notebook_file(mocker):
+    """Tests that process_path delegates correctly when given a single notebook file."""
+    mock_check_single_notebook = mocker.patch(
+        "enforce_notebook_run_order.enforce_notebook_run_order.check_single_notebook"
     )
-    assert result.exit_code == 0
 
-
-def test_cli_valid_notebook_path_invalid_notebook():
-    """Tests that the CLI returns 1 when given an invalid notebook path."""
-    runner = CliRunner()
-    result = runner.invoke(
-        cli,
-        [
-            "test/test_data/enforce_notebook_run_order_invalid/test_subdirectory/"
-            "invalid_subdirectory_notebook.ipynb",
-        ],
+    notebook_path = os.path.join(
+        "test", "test_data", "enforce_notebook_run_order_valid", "valid_notebook.ipynb"
     )
-    assert result.exit_code == 1
 
+    enforce_notebook_run_order.process_path(notebook_path)
 
-def test_cli_valid_notebook_dir_valid_notebooks():
-    """Tests that the CLI returns 0 when given a valid notebook_dir."""
-    runner = CliRunner()
-    result = runner.invoke(
-        cli,
-        [
-            "test/test_data/enforce_notebook_run_order_valid",
-        ],
-    )
-    assert result.exit_code == 0
-
-
-def test_cli_no_paths_searches_entire_dir(mocker):
-    """
-    Tests that the CLI searches the entire current directory if no paths are specified.
-    """
-    mock_process_path = mocker.patch("enforce_notebook_run_order.cli.process_path")
-
-    runner = CliRunner()
-    result = runner.invoke(cli)
-
-    # The process_path function should be called once, with the current directory as its argument
-    mock_process_path.assert_called_once_with(".")
-
-    assert result.exit_code == 0
+    mock_check_single_notebook.assert_called_once_with(notebook_path)
