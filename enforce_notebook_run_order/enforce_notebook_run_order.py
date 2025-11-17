@@ -46,6 +46,11 @@ def check_notebook_run_order(notebook_data: Dict) -> None:
         NotebookRunOrderError: If the cells in the notebook were not run sequentially,
         including if they don't start from 1 or have gaps in the sequence.
     """
+
+    help_msg = (
+        "To fix this, restart the notebook kernel and run all cells sequentially."
+    )
+
     previous_cell_number = 0
     code_cells = utils.get_code_cells(notebook_data)
     for cell in code_cells:
@@ -55,15 +60,14 @@ def check_notebook_run_order(notebook_data: Dict) -> None:
         if len(current_cell_source) > 0:
             if current_cell_number is None:
                 raise NotebookCodeCellNotRunError(
-                    f"Code cell was not run. The previous cell was #{previous_cell_number}. \n\n"
-                    f"Cell contents: \n\n> {cell}"
+                    f"Code cell was not run. The previous cell was #{previous_cell_number}.\n\n"
+                    + help_msg
                 )
             if current_cell_number != previous_cell_number + 1:
                 raise NotebookRunOrderError(
                     "Cells were not run sequentially. "
                     f"The cell that caused this error is #{current_cell_number} "
-                    f"and the previous cell was #{previous_cell_number}. \n\n"
-                    f"Cell contents: \n\n> {cell}"
+                    f"and the previous cell was #{previous_cell_number}.\n\n" + help_msg
                 )
         previous_cell_number = current_cell_number
 
