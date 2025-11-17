@@ -137,6 +137,21 @@ def test_process_path_invalid_notebook_path():
         enforce_notebook_run_order.process_path("test/test_data/invalid_notebook.py")
 
 
+def test_process_path_single_notebook_file(mocker):
+    """Tests that process_path delegates correctly when given a single notebook file."""
+    mock_check_single_notebook = mocker.patch(
+        "enforce_notebook_run_order.enforce_notebook_run_order.check_single_notebook"
+    )
+
+    notebook_path = os.path.join(
+        "test", "test_data", "enforce_notebook_run_order_valid", "valid_notebook.ipynb"
+    )
+
+    enforce_notebook_run_order.process_path(notebook_path)
+
+    mock_check_single_notebook.assert_called_once_with(notebook_path)
+
+
 def test_cli_valid_notebook_path_valid_notebook():
     """Tests that the CLI returns 0 when given a valid notebook path."""
     runner = CliRunner()
@@ -282,3 +297,11 @@ def test_cli_no_paths_delegates_to_process_path_with_current_dir(mocker):
     # Both check_notebook_run_order was called (proving notebooks were processed)
     # and the process started from "." (which os.walk would handle recursively)
     assert mock_check_notebook_run_order.called
+
+
+def test_cli_no_paths_invalid_notebook_exits_with_error():
+    """Tests that CLI exits with a non-zero status when scanning '.' finds bad notebooks."""
+    runner = CliRunner()
+    result = runner.invoke(cli)
+
+    assert result.exit_code == 1
