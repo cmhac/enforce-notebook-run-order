@@ -3,7 +3,6 @@ name: docs
 on:
   workflow_run:
     workflows: ["auto-tag"]
-    branches: [main]
     types:
       - completed
 
