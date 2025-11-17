@@ -16,4 +16,4 @@ test:
 	poetry run coverage html
 
 docs:
-	$(MAKE) -C docs html
+	poetry run $(MAKE) -C docs html
