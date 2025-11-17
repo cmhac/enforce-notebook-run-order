@@ -92,3 +92,37 @@ def notebook_data_no_code_cells():
 def notebook_data_empty():
     """Returns notebook data with no cells at all."""
     return {"cells": []}
+
+
+@pytest.fixture
+def notebook_data_starts_from_zero():
+    """Returns notebook data that starts from execution_count 0 instead of 1."""
+    return {
+        "cells": [
+            {"cell_type": "code", "execution_count": 0, "source": ["print('foo')"]},
+            {"cell_type": "code", "execution_count": 1, "source": ["print('bar')"]},
+        ]
+    }
+
+
+@pytest.fixture
+def notebook_data_starts_from_two():
+    """Returns notebook data that starts from execution_count 2 instead of 1."""
+    return {
+        "cells": [
+            {"cell_type": "code", "execution_count": 2, "source": ["print('foo')"]},
+            {"cell_type": "code", "execution_count": 3, "source": ["print('bar')"]},
+        ]
+    }
+
+
+@pytest.fixture
+def notebook_data_with_gap():
+    """Returns notebook data with a gap in execution sequence (1, 2, 4)."""
+    return {
+        "cells": [
+            {"cell_type": "code", "execution_count": 1, "source": ["print('foo')"]},
+            {"cell_type": "code", "execution_count": 2, "source": ["print('bar')"]},
+            {"cell_type": "code", "execution_count": 4, "source": ["print('baz')"]},
+        ]
+    }

@@ -26,6 +26,26 @@ Any language kernel that produces standard ``.ipynb`` files with ``execution_cou
 is supported. The tool is language-agnostic and only inspects the notebook's
 execution order metadata.
 
+Validation Requirements
+-----------------------
+
+For a notebook to be considered valid, it must meet the following requirements:
+
+* **All non-empty code cells must be executed**: Each code cell with content must have an ``execution_count`` value (not ``None``).
+* **Execution must start from 1**: The first non-empty code cell must have ``execution_count=1``.
+* **No gaps in execution sequence**: Execution counts must be strictly sequential (1, 2, 3, ...) with no skipped numbers.
+
+**Examples:**
+
+* ✅ **Valid**: Cells with execution counts ``1, 2, 3, 4``
+* ❌ **Invalid**: Cells starting with ``0, 1, 2`` (must start from 1)
+* ❌ **Invalid**: Cells starting with ``2, 3, 4`` (must start from 1)
+* ❌ **Invalid**: Cells with ``1, 2, 4, 5`` (gap at 3)
+* ❌ **Invalid**: Cells with ``1, 3, 2`` (not sequential)
+* ❌ **Invalid**: Cells with ``1, 2, None`` (unexecuted cell)
+
+**Note**: Empty code cells (cells with no content) are ignored and do not need to be executed.
+
 Usage
 -----
 

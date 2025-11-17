@@ -99,3 +99,36 @@ def test_process_path_single_notebook_file(mocker):
     enforce_notebook_run_order.process_path(notebook_path)
 
     mock_check_single_notebook.assert_called_once_with(notebook_path)
+
+
+def test_check_notebook_run_order_starts_from_zero(notebook_data_starts_from_zero):
+    """Tests that a notebook starting from execution_count 0 raises an error."""
+    with pytest.raises(enforce_notebook_run_order.NotebookRunOrderError) as error:
+        enforce_notebook_run_order.check_notebook_run_order(
+            notebook_data_starts_from_zero
+        )
+
+    assert "Cells were not run sequentially" in str(error.value)
+    assert "The cell that caused this error is #0" in str(error.value)
+
+
+def test_check_notebook_run_order_starts_from_two(notebook_data_starts_from_two):
+    """Tests that a notebook starting from execution_count 2 raises an error."""
+    with pytest.raises(enforce_notebook_run_order.NotebookRunOrderError) as error:
+        enforce_notebook_run_order.check_notebook_run_order(
+            notebook_data_starts_from_two
+        )
+
+    assert "Cells were not run sequentially" in str(error.value)
+    assert "The cell that caused this error is #2" in str(error.value)
+    assert "the previous cell was #0" in str(error.value)
+
+
+def test_check_notebook_run_order_with_gap(notebook_data_with_gap):
+    """Tests that a notebook with a gap in execution sequence raises an error."""
+    with pytest.raises(enforce_notebook_run_order.NotebookRunOrderError) as error:
+        enforce_notebook_run_order.check_notebook_run_order(notebook_data_with_gap)
+
+    assert "Cells were not run sequentially" in str(error.value)
+    assert "The cell that caused this error is #4" in str(error.value)
+    assert "the previous cell was #2" in str(error.value)
