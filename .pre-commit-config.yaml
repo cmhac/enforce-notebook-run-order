@@ -3,6 +3,12 @@ repos:
     rev: 22.10.0
     hooks:
       - id: black
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.9.1
+    hooks:
+      - id: nbqa-black
+      - id: nbqa-pylint
+        args: [--disable=C0114] # Disable missing-module-docstring for notebooks
   - repo: local
     hooks:
       - id: pylint

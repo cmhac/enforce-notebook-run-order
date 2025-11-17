@@ -26,6 +26,7 @@ Sphinx = "^7.4.7"
 sphinx-click = "^6.0.0"
 recommonmark = "^0.7.1"
 pydata-sphinx-theme = "^0.15.4"
+nbqa = "^1.9.1"
 
 [build-system]
 requires = ["poetry-core"]
