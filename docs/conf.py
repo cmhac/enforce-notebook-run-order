@@ -34,4 +34,13 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "pydata_sphinx_theme"
 html_static_path = []
 
+html_theme_options = {
+    "show_toc_level": 2,
+    "navigation_depth": 4,
+    "secondary_sidebar_items": ["page-toc"],
+    "primary_sidebar_end": [],
+}
+
+html_sidebars = {"**": []}
+
 master_doc = "index"
