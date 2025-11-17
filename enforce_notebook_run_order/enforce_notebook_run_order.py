@@ -39,12 +39,12 @@ def check_notebook_run_order(notebook_data: Dict) -> None:
     (1, 2, 3, ... with no skipped numbers).
 
     Args:
-        notebook_data: Notebook data in dictionary format.
+        notebook_data (Dict): Notebook data in dictionary format.
 
     Raises:
         NotebookCodeCellNotRunError: If a code cell in the notebook was not run.
         NotebookRunOrderError: If the cells in the notebook were not run sequentially,
-        including if they don't start from 1 or have gaps in the sequence.
+            including if they don't start from 1 or have gaps in the sequence.
     """
 
     help_msg = (
@@ -76,7 +76,7 @@ def check_single_notebook(notebook_path: str) -> None:
     """Check a single notebook for sequential execution.
 
     Args:
-        notebook_path: Path to the notebook file.
+        notebook_path (str): Path to the notebook file.
 
     Raises:
         InvalidNotebookRunError: If any problems were identified with the notebook's run order.
@@ -102,7 +102,7 @@ def process_path(path: str) -> None:
     """Process a path to a notebook file or directory recursively.
 
     Args:
-        path: Path to a single ``.ipynb`` file or a directory containing notebooks.
+        path (str): Path to a single ``.ipynb`` file or a directory containing notebooks.
 
     Raises:
         ValueError: If the path is neither a directory nor a ``.ipynb`` file.

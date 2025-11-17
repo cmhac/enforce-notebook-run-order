@@ -18,7 +18,7 @@ def cli(paths: Tuple[str, ...] = None):
     or recursively in the current directory if no paths are specified.
 
     Args:
-        paths: Zero or more paths to notebook files or directories.
+        paths (Tuple[str, ...]): Zero or more paths to notebook files or directories.
             Directories are traversed recursively. If omitted, ``.`` is used.
     """
     try:
