@@ -20,8 +20,8 @@
 
 Enforce the run order of Jupyter notebooks.
 
-Jupyter notebooks are great for interactive data analysis. However, when
-they can encourage a bad habit: running cells out of order. This can
+Jupyter notebooks are great for interactive data analysis. However, they
+can encourage a bad habit: running cells out of order. This can
 lead to notebooks being committed to the repository in a state where
 they don\'t run from top to bottom, and other collaborators may receive
 different results when running the notebook from top to bottom.
@@ -29,11 +29,25 @@ different results when running the notebook from top to bottom.
 `enforce-notebook-run-order` enforces the run order of a notebook by
 raising an exception if any cells are run out of order.
 
+## Language Support
+
+This tool works with **all Jupyter notebook kernels**, including:
+
+- **Python** (IPython)
+- **R** (IRkernel)
+- **Julia**
+- **Scala**, **Java**, **C++**, and many others
+
+Any language kernel that produces standard `.ipynb` files with
+`execution_count` metadata is supported. The tool is completely
+language-agnostic and only inspects the notebook's execution order
+metadata.
+
 ## Installation
 
 `enforce-notebook-run-order` can be installed via pip:
 
-``` bash
+```bash
 pip install enforce-notebook-run-order
 ```
 
@@ -50,13 +64,13 @@ See the [pre-commit hook](#pre-commit-hook) section for more details.
 To use `enforce-notebook-run-order` as a standalone script, simply run
 it with the path to the notebook(s) you want to check:
 
-``` bash
+```bash
 nbcheck my_notebook.ipynb my_other_notebook.ipynb
 ```
 
 Or point it to a directory to check all notebooks in that directory:
 
-``` bash
+```bash
 nbcheck my_notebooks/
 ```
 
@@ -71,12 +85,12 @@ You can also use the full `enforce-notebook-run-order` command, but the
 To use `enforce_notebook_run_order` as a pre-commit hook, add the
 following to your `.pre-commit-config.yaml`:
 
-``` yaml
+```yaml
 repos:
--   repo: https://github.com/christopher-hacker/enforce-notebook-run-order
+  - repo: https://github.com/christopher-hacker/enforce-notebook-run-order
     rev: 2.0.3
     hooks:
-    -   id: enforce-notebook-run-order
+      - id: enforce-notebook-run-order
 ```
 
 ### Limitations

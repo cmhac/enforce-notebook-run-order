@@ -3,14 +3,28 @@ enforce-notebook-run-order
 
 Enforce the run order of Jupyter notebooks.
 
-Jupyter notebooks are great for interactive data analysis. However, when
-they can encourage a bad habit: running cells out of order. This can lead
+Jupyter notebooks are great for interactive data analysis. However, they
+can encourage a bad habit: running cells out of order. This can lead
 to notebooks being committed to the repository in a state where they don't run
 from top to bottom, and other collaborators may receive different results
 when running the notebook from top to bottom.
 
 ``enforce-notebook-run-order`` enforces the run order of a notebook by raising an exception if
 any cells are run out of order.
+
+Language Support
+----------------
+
+This tool works with **all Jupyter notebook kernels**, including:
+
+* **Python** (IPython)
+* **R** (IRkernel)
+* **Julia**
+* **Scala**, **Java**, **C++**, and many others
+
+Any language kernel that produces standard ``.ipynb`` files with ``execution_count`` metadata
+is supported. The tool is completely language-agnostic and only inspects the notebook's
+execution order metadata.
 
 Installation
 ------------
