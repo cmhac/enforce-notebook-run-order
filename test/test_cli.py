@@ -135,6 +135,41 @@ def test_cli_no_args_exits_with_error_on_invalid_notebook():
 # E2E tests for multi-language notebook support
 
 
+def test_cli_valid_python_notebook():
+    """E2E test: CLI returns 0 for a valid Python notebook."""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli, ["test/test_data/notebooks/python/valid/valid_notebook.ipynb"]
+    )
+
+    assert result.exit_code == 0
+    assert "VALID" in result.output
+
+
+def test_cli_invalid_python_notebook():
+    """E2E test: CLI returns 1 for an invalid Python notebook."""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli, ["test/test_data/notebooks/python/invalid/invalid_notebook.ipynb"]
+    )
+
+    assert result.exit_code == 1
+    # Exception details are in the exception attribute when not caught
+    assert result.exception is not None
+    assert "not run in order" in str(result.exception)
+
+
+def test_cli_python_notebooks_directory():
+    """E2E test: CLI processes directory with mixed valid/invalid Python notebooks."""
+    runner = CliRunner()
+    result = runner.invoke(cli, ["test/test_data/notebooks/python"])
+
+    # Should fail because the directory contains an invalid notebook
+    assert result.exit_code == 1
+    assert result.exception is not None
+    assert "not run in order" in str(result.exception)
+
+
 def test_cli_valid_r_notebook():
     """E2E test: CLI returns 0 for a valid R notebook."""
     runner = CliRunner()
