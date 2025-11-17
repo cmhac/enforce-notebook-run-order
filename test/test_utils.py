@@ -1,129 +1,70 @@
 """tests certain functions from the utils module"""
 
+import os
 import pytest
 from enforce_notebook_run_order import utils
 
-# pylint: disable=redefined-outer-name
 
-
-@pytest.fixture
-def cell_json_with_comment():
-    """Returns a cell json with a comment"""
-    return {
-        "cell_type": "code",
-        "execution_count": 1,
-        "metadata": {},
-        "outputs": [],
-        "source": ["# this is a comment"],
-    }
-
-
-@pytest.fixture
-def cell_json_with_comment_extra_spaces():
-    """Returns a cell json with a comment and extra spaces"""
-    return {
-        "cell_type": "code",
-        "execution_count": 1,
-        "metadata": {},
-        "outputs": [],
-        "source": ["#     this is a comment    "],
-    }
-
-
-@pytest.fixture
-def cell_json_with_comment_no_space():
-    """Returns a cell json with a comment and no space"""
-    return {
-        "cell_type": "code",
-        "execution_count": 1,
-        "metadata": {},
-        "outputs": [],
-        "source": ["#this is a comment"],
-    }
-
-
-@pytest.fixture
-def cell_json_without_comment():
-    """Returns a cell json without a comment"""
-    return {
-        "cell_type": "code",
-        "execution_count": 1,
-        "metadata": {},
-        "outputs": [],
-        "source": ["print('hello world')"],
-    }
-
-
-@pytest.fixture
-def cell_with_no_run_comment():
-    """Returns a cell json with a no-run comment"""
-    return {
-        "cell_type": "code",
-        "execution_count": 1,
-        "metadata": {},
-        "outputs": [],
-        "source": ["# no-run"],
-    }
-
-
-@pytest.fixture
-def cell_with_no_check_output_comment():
-    """Returns a cell json with a no-check-output comment"""
-    return {
-        "cell_type": "code",
-        "execution_count": 1,
-        "metadata": {},
-        "outputs": [],
-        "source": ["# no-check-output"],
-    }
-
-
-def test_parse_cell_comment(
-    cell_json_with_comment,
-    cell_json_with_comment_extra_spaces,
-    cell_json_with_comment_no_space,
-):
-    """
-    tests that parse_cell_comment returns the comment
-    from the first line of the cell, if present
-    """
-    assert utils.parse_cell_comment(cell_json_with_comment) == "this is a comment"
-    assert (
-        utils.parse_cell_comment(cell_json_with_comment_extra_spaces)
-        == "this is a comment"
+def test_load_notebook_data_valid_notebook():
+    """Tests that load_notebook_data successfully loads a valid notebook file"""
+    notebook_path = os.path.join(
+        "test", "test_data", "enforce_notebook_run_order_valid", "valid_notebook.ipynb"
     )
-    assert (
-        utils.parse_cell_comment(cell_json_with_comment_no_space) == "this is a comment"
-    )
+    notebook_data = utils.load_notebook_data(notebook_path)
+
+    assert isinstance(notebook_data, dict)
+    assert "cells" in notebook_data
+    assert isinstance(notebook_data["cells"], list)
+    assert len(notebook_data["cells"]) > 0
 
 
-def test_parse_cell_comment_returns_none_when_no_comment(cell_json_without_comment):
-    """tests that parse_cell_comment returns None if there is no comment"""
-    assert utils.parse_cell_comment(cell_json_without_comment) is None
+def test_load_notebook_data_nonexistent_file():
+    """Tests that load_notebook_data raises FileNotFoundError for nonexistent file"""
+    with pytest.raises(FileNotFoundError):
+        utils.load_notebook_data("nonexistent_notebook.ipynb")
 
 
-def test_cell_has_no_run_comment(cell_with_no_run_comment):
-    """tests that cell_has_no_run_comment returns True if the cell has a no-run comment"""
-    assert utils.cell_has_no_run_comment(cell_with_no_run_comment)
+def test_get_code_cells_mixed_cells(notebook_data_with_mixed_cells):
+    """Tests that get_code_cells returns only code cells from mixed cell types"""
+    code_cells = utils.get_code_cells(notebook_data_with_mixed_cells)
+
+    assert len(code_cells) == 3
+    assert all(cell["cell_type"] == "code" for cell in code_cells)
+    assert code_cells[0]["execution_count"] == 1
+    assert code_cells[1]["execution_count"] == 2
+    assert code_cells[2]["execution_count"] == 3
 
 
-def test_cell_has_no_run_comment_returns_false_when_no_comment(
-    cell_json_without_comment,
-):
-    """tests that cell_has_no_run_comment returns False if the cell has no comment"""
-    assert not utils.cell_has_no_run_comment(cell_json_without_comment)
+def test_get_code_cells_only_code_cells(notebook_data_only_code_cells):
+    """Tests that get_code_cells returns all cells when notebook has only code cells"""
+    code_cells = utils.get_code_cells(notebook_data_only_code_cells)
+
+    assert len(code_cells) == 2
+    assert all(cell["cell_type"] == "code" for cell in code_cells)
 
 
-def test_cell_has_no_check_output_comment(cell_with_no_check_output_comment):
-    """
-    tests that cell_has_no_check_output_comment returns True
-    if the cell has a no-check-output comment
-    """
-    assert utils.cell_has_no_check_output_comment(cell_with_no_check_output_comment)
+def test_get_code_cells_no_code_cells(notebook_data_no_code_cells):
+    """Tests that get_code_cells returns empty list when notebook has no code cells"""
+    code_cells = utils.get_code_cells(notebook_data_no_code_cells)
+
+    assert len(code_cells) == 0
+    assert isinstance(code_cells, list)
 
 
-def test_cell_has_no_check_output_comment_returns_false_when_no_comment(
-    cell_json_without_comment,
-):
-    """tests that cell_has_no_check_output_comment returns False if the cell has no comment"""
-    assert not utils.cell_has_no_check_output_comment(cell_json_without_comment)
+def test_get_code_cells_empty_notebook(notebook_data_empty):
+    """Tests that get_code_cells returns empty list for notebook with no cells"""
+    code_cells = utils.get_code_cells(notebook_data_empty)
+
+    assert len(code_cells) == 0
+    assert isinstance(code_cells, list)
+
+
+def test_get_code_cells_preserves_cell_data(notebook_data_with_mixed_cells):
+    """Tests that get_code_cells preserves all cell data"""
+    code_cells = utils.get_code_cells(notebook_data_with_mixed_cells)
+
+    # Verify first code cell has all expected fields
+    assert "cell_type" in code_cells[0]
+    assert "execution_count" in code_cells[0]
+    assert "source" in code_cells[0]
+    assert code_cells[0]["source"] == ["print('cell 1')"]

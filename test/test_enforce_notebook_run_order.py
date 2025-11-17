@@ -4,56 +4,6 @@ import os
 import pytest
 from enforce_notebook_run_order import enforce_notebook_run_order
 
-# pylint: disable=redefined-outer-name
-
-
-@pytest.fixture
-def valid_notebook_data():
-    """Returns valid test notebook json."""
-    return {
-        "cells": [
-            {"cell_type": "code", "execution_count": 1, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": 2, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": 3, "source": ["print('foo')"]},
-        ]
-    }
-
-
-@pytest.fixture
-def out_of_order_notebook_data():
-    """Returns invalid test notebook json."""
-    return {
-        "cells": [
-            {"cell_type": "code", "execution_count": 1, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": 3, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": 2, "source": ["print('foo')"]},
-        ]
-    }
-
-
-@pytest.fixture
-def notebook_cell_not_run_data():
-    """Returns invalid test notebook json."""
-    return {
-        "cells": [
-            {"cell_type": "code", "execution_count": 1, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": 2, "source": ["print('foo')"]},
-            {"cell_type": "code", "execution_count": None, "source": ["print('foo')"]},
-        ]
-    }
-
-
-@pytest.fixture
-def empty_notebook_cells():
-    """Returns empty notebook cells."""
-    return {
-        "cells": [
-            {"cell_type": "code", "execution_count": 1, "source": []},
-            {"cell_type": "code", "execution_count": None, "source": []},
-            {"cell_type": "code", "execution_count": None, "source": []},
-        ]
-    }
-
 
 def test_check_notebook_run_order_valid(valid_notebook_data):
     """Tests that valid notebook data does not raise an error."""

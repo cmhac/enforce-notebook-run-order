@@ -1,7 +1,7 @@
 """Contains shared functionality used across multiple modules"""
 
 import json
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 
 def load_notebook_data(notebook_path: str) -> Dict:
@@ -32,50 +32,3 @@ def get_code_cells(notebook_data: Dict) -> List[Dict]:
         if cell["cell_type"] == "code":
             code_cells.append(cell)
     return code_cells
-
-
-def parse_cell_comment(cell: Dict) -> Optional[str]:
-    """Returns the comment from the first line of the cell, if present
-
-    Args:
-        cell: The cell to parse
-
-    Returns:
-        str: The comment from the first line of the cell, if present
-    """
-    first_line = cell["source"][0]
-    if first_line.startswith("#"):
-        return first_line[1:].strip()
-    return None
-
-
-def cell_has_no_run_comment(cell_data: Dict) -> bool:
-    """(Deprecated) Returns True if the cell has a ``# no-run`` comment.
-
-    This marker is no longer acted upon by the tool and is retained only
-    for backward compatibility and test coverage.
-
-    Args:
-        cell_data: The cell to check.
-
-    Returns:
-        bool: True if the first line is ``# no-run``.
-    """
-    comment = parse_cell_comment(cell_data)
-    return comment is not None and comment.lower() == "no-run"
-
-
-def cell_has_no_check_output_comment(cell_data: Dict) -> bool:
-    """(Deprecated) Returns True if the cell has a ``# no-check-output`` comment.
-
-    The tool no longer performs output comparisons; this marker is retained
-    only for backward compatibility and test coverage.
-
-    Args:
-        cell_data: The cell to check.
-
-    Returns:
-        bool: True if the first line is ``# no-check-output``.
-    """
-    comment = parse_cell_comment(cell_data)
-    return comment is not None and comment.lower() == "no-check-output"
