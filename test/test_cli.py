@@ -154,9 +154,8 @@ def test_cli_invalid_python_notebook():
     )
 
     assert result.exit_code == 1
-    # Exception details are in the exception attribute when not caught
-    assert result.exception is not None
-    assert "not run in order" in str(result.exception)
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
 
 
 def test_cli_python_notebooks_directory():
@@ -166,8 +165,8 @@ def test_cli_python_notebooks_directory():
 
     # Should fail because the directory contains an invalid notebook
     assert result.exit_code == 1
-    assert result.exception is not None
-    assert "not run in order" in str(result.exception)
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
 
 
 def test_cli_valid_r_notebook():
@@ -189,9 +188,8 @@ def test_cli_invalid_r_notebook():
     )
 
     assert result.exit_code == 1
-    # Exception details are in the exception attribute when not caught
-    assert result.exception is not None
-    assert "not run in order" in str(result.exception)
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
 
 
 def test_cli_valid_julia_notebook():
@@ -213,9 +211,8 @@ def test_cli_invalid_julia_notebook():
     )
 
     assert result.exit_code == 1
-    # Exception details are in the exception attribute when not caught
-    assert result.exception is not None
-    assert "not run in order" in str(result.exception)
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
 
 
 def test_cli_r_notebooks_directory():
@@ -225,8 +222,8 @@ def test_cli_r_notebooks_directory():
 
     # Should fail because the directory contains an invalid notebook
     assert result.exit_code == 1
-    assert result.exception is not None
-    assert "not run in order" in str(result.exception)
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
 
 
 def test_cli_julia_notebooks_directory():
@@ -236,8 +233,8 @@ def test_cli_julia_notebooks_directory():
 
     # Should fail because the directory contains an invalid notebook
     assert result.exit_code == 1
-    assert result.exception is not None
-    assert "not run in order" in str(result.exception)
+    assert "INVALID" in result.output
+    assert "not run sequentially" in result.output
 
 
 def test_cli_multiple_language_notebooks():

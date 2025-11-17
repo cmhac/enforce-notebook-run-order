@@ -4,9 +4,10 @@ Checks run order of notebooks by inspecting existing execution counts.
 Does not execute notebooks or validate outputs.
 """
 
+import sys
 from typing import Tuple
 import click
-from .enforce_notebook_run_order import process_path
+from .enforce_notebook_run_order import process_path, InvalidNotebookRunError
 
 
 @click.command()
@@ -20,9 +21,13 @@ def cli(paths: Tuple[str, ...] = None):
         paths: Zero or more paths to notebook files or directories.
             Directories are traversed recursively. If omitted, ``.`` is used.
     """
-    if paths:
-        for path in paths:
-            process_path(path)
-    else:
-        # If no paths are provided, check the current directory
-        process_path(".")
+    try:
+        if paths:
+            for path in paths:
+                process_path(path)
+        else:
+            # If no paths are provided, check the current directory
+            process_path(".")
+    except InvalidNotebookRunError:
+        # Error message already printed by check_single_notebook
+        sys.exit(1)
