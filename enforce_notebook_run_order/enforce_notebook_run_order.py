@@ -69,7 +69,7 @@ def check_notebook_run_order(notebook_data: Dict) -> None:
                     f"The cell that caused this error is #{current_cell_number} "
                     f"and the previous cell was #{previous_cell_number}.\n\n" + help_msg
                 )
-        previous_cell_number = current_cell_number
+            previous_cell_number = current_cell_number
 
 
 def check_single_notebook(notebook_path: str) -> None:
